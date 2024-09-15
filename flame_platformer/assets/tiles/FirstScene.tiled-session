@@ -26,11 +26,11 @@
             "scaleInEditor": 1
         },
         "forestmap.tmx": {
-            "scale": 1.7855,
-            "selectedLayer": 0,
+            "scale": 0.5491,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 1117.8941472976758,
-                "y": 504.3405208625035
+                "x": 979.7851028956475,
+                "y": 325.0773993808049
             }
         },
         "temp.tsx": {
