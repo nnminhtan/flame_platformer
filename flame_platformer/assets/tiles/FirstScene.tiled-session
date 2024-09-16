@@ -22,30 +22,42 @@
             "scaleInEditor": 1
         },
         "env_trees.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1.131,
             "scaleInEditor": 1
         },
         "forestmap.tmx": {
-            "scale": 0.5491,
-            "selectedLayer": 3,
+            "scale": 1.5,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 979.7851028956475,
-                "y": 325.0773993808049
+                "x": 367.66666666666663,
+                "y": 471.3333333333333
             }
+        },
+        "idle.tsx": {
+            "dynamicWrapping": true
         },
         "temp.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 1,
             "scaleInEditor": 0.42
+        },
+        "test.tmx": {
+            "scale": 1.9672916666666664,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 120.21603304034736,
+                "y": 32.02372127501852
+            }
         }
     },
-    "last.imagePath": "/Users/macbookpro2020/Downloads/github/flame_platformer/flame_platformer/assets/images/DarkForest1.2",
+    "last.imagePath": "E:/GameAsset/Adventurer-1.5/Individual Sprites",
     "map.fixedSize": true,
-    "map.height": 64,
+    "map.height": 4,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
-    "map.width": 120,
+    "map.width": 15,
     "openFiles": [
         "env_trees.tsx",
         "env_ground.tsx",
@@ -54,10 +66,11 @@
     ],
     "project": "FirstScene.tiled-project",
     "recentFiles": [
-        "env_trees.tsx",
-        "env_ground.tsx",
+        "test.tmx",
         "env_rock.tsx",
         "forestmap.tmx",
+        "env_ground.tsx",
+        "env_trees.tsx",
         "FirstScene.tsx",
         "temp.tsx"
     ],
@@ -66,5 +79,5 @@
         "height": 16,
         "width": 16
     },
-    "tileset.type": 0
+    "tileset.type": 1
 }
