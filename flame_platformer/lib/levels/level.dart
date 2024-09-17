@@ -5,11 +5,13 @@ import 'package:flame_platformer/actors/player.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 class Level extends World {
+  final String levelName;
+  Level({required this.levelName});
   late TiledComponent level;
 
   @override
   FutureOr<void> onLoad() async {
-    level = await TiledComponent.load('forestmap.tmx', Vector2.all(16));
+    level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
 
     add(level);
     // add(Player());

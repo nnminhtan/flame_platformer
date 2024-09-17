@@ -10,7 +10,7 @@ void main() {
   Flame.device.setLandscape();
 
   flameplatformer game = flameplatformer();
-  runApp(GameWidget(game: kDebugMode ? flameplatformer() : game),
-  
+  runApp(
+    GameWidget(game: kDebugMode ? flameplatformer() : game),
   );
 }

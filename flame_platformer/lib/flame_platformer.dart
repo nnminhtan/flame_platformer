@@ -6,7 +6,7 @@ import 'package:flame_platformer/levels/level.dart';
 
 class flameplatformer extends FlameGame {
   late final CameraComponent cam;
-  final world = Level();
+  final world = Level(levelName: 'forestmap');
 
   @override
   FutureOr<void> onLoad() async {
