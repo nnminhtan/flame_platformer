@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame_platformer/flame_platformer.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 enum PlayerState { idle, run, jump }
 
@@ -12,13 +14,14 @@ enum PlayerDirection {
 }
 
 class Player extends SpriteAnimationGroupComponent
-    with HasGameRef<flameplatformer> {
+    with HasGameRef<flameplatformer>, KeyboardHandler {
   Player({required position}) : super(position: position);
 
   // for animation
   late final SpriteAnimation idleAnimation;
   final double stepTime = 0.5;
   Vector2 velocity = Vector2.zero();
+  bool isFacingRight = true;
 
   // for movement
   PlayerDirection playerDirection = PlayerDirection.none;
@@ -34,6 +37,25 @@ class Player extends SpriteAnimationGroupComponent
   void update(double dt) {
     _updatePlayerMovement(dt);
     super.update(dt);
+  }
+
+  @override
+  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    // TODO: implement onKeyEvent
+    //Set the which key is pressed
+    final isLeftKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyA) || keysPressed.contains(LogicalKeyboardKey.arrowLeft);
+    final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) || keysPressed.contains(LogicalKeyboardKey.arrowRight);
+    
+    //makes changes to the player
+    if(isLeftKeyPressed && isRightKeyPressed)
+      playerDirection = PlayerDirection.none;
+    else if(isLeftKeyPressed)
+      playerDirection = PlayerDirection.left;
+    else if(isRightKeyPressed)
+      playerDirection = PlayerDirection.right;
+    else
+      playerDirection = PlayerDirection.none;
+    return super.onKeyEvent(event, keysPressed);
   }
 
   Future<void> _loadAllAnimations() async {
@@ -69,10 +91,18 @@ class Player extends SpriteAnimationGroupComponent
     double dirX = 0.0;
     switch (playerDirection) {
       case PlayerDirection.left:
+        if(isFacingRight){
+          flipHorizontallyAroundCenter();
+          isFacingRight = false;
+        }
         current = PlayerState.run;
         dirX -= moveSpeed;
         break;
       case PlayerDirection.right:
+        if(!isFacingRight){
+            flipHorizontallyAroundCenter();
+            isFacingRight = true;
+        }
         current = PlayerState.run;
         dirX += moveSpeed;
         break;
