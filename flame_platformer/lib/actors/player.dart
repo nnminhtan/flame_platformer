@@ -15,11 +15,11 @@ enum PlayerDirection {
 
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<flameplatformer>, KeyboardHandler {
-  Player({required position}) : super(position: position);
+  Player({position}) : super(position: position);
 
   // for animation
   late final SpriteAnimation idleAnimation;
-  final double stepTime = 0.5;
+  final double stepTime = 0.25;
   Vector2 velocity = Vector2.zero();
   bool isFacingRight = true;
 
@@ -47,21 +47,25 @@ class Player extends SpriteAnimationGroupComponent
     final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) || keysPressed.contains(LogicalKeyboardKey.arrowRight);
     
     //makes changes to the player
-    if(isLeftKeyPressed && isRightKeyPressed)
+    if(isLeftKeyPressed && isRightKeyPressed) {
       playerDirection = PlayerDirection.none;
-    else if(isLeftKeyPressed)
+    } 
+    else if(isLeftKeyPressed){
       playerDirection = PlayerDirection.left;
-    else if(isRightKeyPressed)
+    }
+    else if(isRightKeyPressed){
       playerDirection = PlayerDirection.right;
-    else
+    }
+    else{
       playerDirection = PlayerDirection.none;
+    }
     return super.onKeyEvent(event, keysPressed);
   }
 
   Future<void> _loadAllAnimations() async {
     // Load animations state
     final idleAnimation = await _loadAnimation('Main Character/Idle', 3);
-    final runAnimation = await _loadAnimation('Main Character/Run', 5);
+    final runAnimation = await _loadAnimation('Main Character/Run', 6);
     final jumpAnimation = await _loadAnimation('Main Character/Jump', 4);
 
     animations = {
@@ -107,7 +111,9 @@ class Player extends SpriteAnimationGroupComponent
         dirX += moveSpeed;
         break;
       case PlayerDirection.none:
-        current = PlayerState.idle;
+        if(velocity.x == 0){
+          current = PlayerState.idle;
+        }
         break;
     }
 

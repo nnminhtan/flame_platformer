@@ -13,7 +13,7 @@ class Level extends World {
   @override
   FutureOr<void> onLoad() async {
     level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
-    late final player;
+    late final Player player;
     add(level);
     // add(Player());
     final spawnPointPlayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoints');
