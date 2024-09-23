@@ -27,8 +27,8 @@ class flameplatformer extends FlameGame
 
     cam = CameraComponent.withFixedResolution(
         world: world, width: 1920, height: 1024);
-    cam.viewfinder.anchor = Anchor.topLeft;
-    cam.viewfinder.zoom = 2.2;
+    cam.viewfinder.anchor = Anchor.center;
+    cam.viewfinder.zoom = 3.0;
     // = calculateZoom(1920, 1024, desiredWidth: 800, desiredHeight: 600);  // Example: Zoom to 800x600 area around the player
     addAll([cam, world]);
     addJoystick();
@@ -85,17 +85,22 @@ class flameplatformer extends FlameGame
         break;
       //change this later to jump
       case JoystickDirection.upLeft:
+        player.horizontalMovement = -1;
+        player.hasJumped = true;
         // print('Joystick Dir: ${joystick.direction}');
         // Player().playerDirection = PlayerDirection.left;
         break;
       case JoystickDirection.upRight:
+        player.horizontalMovement = 1;
+        player.hasJumped = true;
         // print('Joystick Dir: ${joystick.direction}');
         // Player().playerDirection = PlayerDirection.right;
         break;
 
       //stop
       default:
-        Player().horizontalMovement = 0;
+        // player.horizontalMovement = 0;
+        // player.hasJumped = false;
         break;
     }
   }
