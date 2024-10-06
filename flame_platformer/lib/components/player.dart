@@ -11,11 +11,11 @@ import 'package:flutter/services.dart';
 enum PlayerState { idle, run, jump, fall }
 
 class Player extends SpriteAnimationGroupComponent
-    with HasGameRef<flameplatformer>, KeyboardHandler {
+    with HasGameRef<FlamePlatformer>, KeyboardHandler {
   Player({position}) : super(position: position);
 
   // for animation
-  final double stepTime = 0.25;
+  final double stepTime = 0.15;
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runAnimation;
   late final SpriteAnimation jumpAnimation;
@@ -29,14 +29,14 @@ class Player extends SpriteAnimationGroupComponent
   // for environment interaction
   List<CollisionBlock> collisionBlocks = [];
   final double _gravity = 9.8;
-  final double _jumpForce = 460;
+  final double _jumpForce = 250; //460
   final double _terminalVelocity = 300;
   bool isOnGround = false;
   bool hasJumped = false;
   PlayerHitBox hitbox = PlayerHitBox(
-    offsetX: 12,
+    offsetX: 14,
     offsetY: 4,
-    width: 26,
+    width: 21,
     height: 30,
   );
 
@@ -141,8 +141,8 @@ class Player extends SpriteAnimationGroupComponent
     if (hasJumped && isOnGround) {
       _playerJump(dt);
     }
-
-    // if dont want jump while falling
+    // double timer = 0.0;
+    // // if dont want jump while falling
     // if (velocity.y > _gravity) {
     //   isOnGround = false;
     // }

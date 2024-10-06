@@ -9,11 +9,12 @@ import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/level.dart';
 import 'package:flutter/painting.dart';
 
-class flameplatformer extends FlameGame
+class FlamePlatformer extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks {
   late final CameraComponent cam;
   Player player = Player();
   late JoystickComponent joystick;
+  bool isPaused = false;
 
   @override
   FutureOr<void> onLoad() async {
@@ -21,14 +22,14 @@ class flameplatformer extends FlameGame
     await images.loadAllImages();
 
     final world = Level(
-      levelName: 'castlemap',
+      levelName: 'forestmap',
       player: player,
     );
 
     cam = CameraComponent.withFixedResolution(
         world: world, width: 1920, height: 1024);
     cam.viewfinder.anchor = Anchor.center;
-    cam.viewfinder.zoom = 3.0;
+    cam.viewfinder.zoom = 5.0;
     // = calculateZoom(1920, 1024, desiredWidth: 800, desiredHeight: 600);  // Example: Zoom to 800x600 area around the player
     addAll([cam, world]);
     addJoystick();
@@ -48,8 +49,14 @@ class flameplatformer extends FlameGame
 
   @override
   void update(double dt) {
-    updateJoystick();
-    super.update(dt);
+    if (!isPaused) {
+      updateJoystick(); // Call this only if the game is not paused
+      super.update(dt); // Update the game logic
+    } 
+  }
+  void togglePause() {
+    isPaused = !isPaused; // Toggle the paused state
+    // You might want to also show/hide the pause menu here
   }
 
   void addJoystick() {
@@ -105,3 +112,5 @@ class flameplatformer extends FlameGame
     }
   }
 }
+
+

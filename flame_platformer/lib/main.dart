@@ -9,8 +9,9 @@ void main() async {
   await Flame.device.fullScreen();
   await Flame.device.setLandscape();
 
-  flameplatformer game = flameplatformer();
+  FlamePlatformer game = FlamePlatformer();
   runApp(
-    GameWidget(game: kDebugMode ? flameplatformer() : game),
+    GameWidget(game: kDebugMode ? FlamePlatformer() : game,
+    ),
   );
 }

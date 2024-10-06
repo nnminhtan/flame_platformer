@@ -62,6 +62,7 @@ flutter:
   assets:
     - assets/tiles/
     - assets/images/DarkForest1.2/
+    - assets/images/PixelFantasy_Caves_1.0/
     - assets/images/Castle/
     - assets/images/Main Character/
     - assets/images/Main Character/Idle/

@@ -8,7 +8,7 @@ import 'package:flame_platformer/flame_platformer.dart';
 enum EnemyState { idle, run, attack }
 
 class BaseEnemy extends SpriteAnimationGroupComponent
-    with HasGameRef<flameplatformer>, CollisionCallbacks {
+    with HasGameRef<FlamePlatformer>, CollisionCallbacks {
   final double offNeg;
   final double offPos;
 
