@@ -7,7 +7,6 @@ import 'package:flame_platformer/components/player_hitbox.dart';
 import 'package:flame_platformer/components/utils.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 enum PlayerState { idle, run, jump, fall }
 

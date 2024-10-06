@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flame_platformer/components/Enemies.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/player.dart';
+import 'package:flame_platformer/components/Skeleton.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
-class Level extends World with HasGameRef<flameplatformer>{
+class Level extends World with HasGameRef<flameplatformer> {
   final String levelName;
   final Player player;
   Level({required this.levelName, required this.player});
@@ -26,6 +28,17 @@ class Level extends World with HasGameRef<flameplatformer>{
           case 'Player':
             player.position = Vector2(spawnpoint.x, spawnpoint.y);
             add(player);
+            break;
+          case 'Skeleton':
+            final offNeg = spawnpoint.properties.getValue('offNeg');
+            final offPos = spawnpoint.properties.getValue('offPos');
+            final skeleton = Skeleton(
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+              offNeg: offNeg,
+              offPos: offPos,
+            );
+            add(skeleton);
             break;
           default:
         }
@@ -58,11 +71,12 @@ class Level extends World with HasGameRef<flameplatformer>{
     }
     player.collisionBlocks = collisionBlocks;
     gameRef.cam.follow(
-      player,   // Reference to your Player component
-      maxSpeed: 500,  // Set a speed limit for camera movement
-      horizontalOnly: false,  // Whether to follow horizontally only
-      verticalOnly: false,    // Whether to follow vertically only
-      snap: true,  // If true, the camera snaps to the player instead of moving smoothly
+      player, // Reference to your Player component
+      maxSpeed: 500, // Set a speed limit for camera movement
+      horizontalOnly: false, // Whether to follow horizontally only
+      verticalOnly: false, // Whether to follow vertically only
+      snap:
+          true, // If true, the camera snaps to the player instead of moving smoothly
     );
 
     // TODO: implement onLoad
