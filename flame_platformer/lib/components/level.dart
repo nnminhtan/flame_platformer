@@ -6,6 +6,7 @@ import 'package:flame_platformer/components/background_tile.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/Skeleton.dart';
+import 'package:flame_platformer/components/thorn.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
@@ -72,6 +73,14 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(skeleton);
             break;
+
+          case 'Thorn':
+            final thorn = Thorn(
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+            );
+            add(thorn);
+          break;
           default:
         }
       }

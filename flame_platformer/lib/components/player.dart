@@ -29,7 +29,7 @@ class Player extends SpriteAnimationGroupComponent
   // for environment interaction
   List<CollisionBlock> collisionBlocks = [];
   final double _gravity = 9.8;
-  final double _jumpForce = 250; //460
+  final double _jumpForce = 190; //460
   final double _terminalVelocity = 300;
   bool isOnGround = false;
   bool hasJumped = false;

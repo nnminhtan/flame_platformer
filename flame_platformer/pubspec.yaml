@@ -70,6 +70,7 @@ flutter:
     - assets/images/Main Character/Jump/
     - assets/images/Main Character/Fall/
     - assets/images/HUD/
+    - assets/images/Trap and Weapon/
     - assets/images/Enemies/Monster/Skeleton/
 
   #   - images/a_dot_burr.jpeg

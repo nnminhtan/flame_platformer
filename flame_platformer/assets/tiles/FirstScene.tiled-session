@@ -19,29 +19,50 @@
             "scaleInDock": 1,
             "scaleInEditor": 3.5437
         },
+        "Spear.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 4.5482
+        },
+        "background1.tsx": {
+            "scaleInDock": 0.2159,
+            "scaleInEditor": 1
+        },
+        "background3.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "bgrd_tree3.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "bgrd_tree5.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
         "castle_env.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "castle_tile.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.4868
+            "scaleInDock": 0.33
         },
         "castlemap.tmx": {
             "expandedObjectLayers": [
+                3,
                 2
             ],
             "scale": 0.4774,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 959.3632174277336,
+                "x": 960.4105571847507,
                 "y": 512.1491411813992
             }
         },
         "env_ground.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.5,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "env_rock.tsx": {
@@ -50,18 +71,19 @@
         },
         "env_trees.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.5,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "forestmap.tmx": {
             "expandedObjectLayers": [
+                11,
                 8
             ],
-            "scale": 0.4632,
-            "selectedLayer": 1,
+            "scale": 2.2132,
+            "selectedLayer": 10,
             "viewCenter": {
-                "x": 722.1502590673574,
-                "y": 691.9257340241796
+                "x": 639.5716609434303,
+                "y": 808.105909994578
             }
         },
         "idle.tsx": {
@@ -69,12 +91,16 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "main_background.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 0.67
+        },
         "mainlev_build.tsx": {
-            "scaleInDock": 1.5534,
+            "scaleInDock": 1.0846,
             "scaleInEditor": 1
         },
         "props2.tsx": {
-            "scaleInDock": 0.5,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "temp.tsx": {
@@ -92,7 +118,7 @@
         }
     },
     "last.externalTilesetPath": "/Users/macbookpro2020/Downloads/github/flame_platformer/flame_platformer/assets/tiles",
-    "last.imagePath": "/Users/macbookpro2020/Downloads/github/flame_platformer/flame_platformer/assets/images/PixelFantasy_Caves_1.0",
+    "last.imagePath": "/Users/macbookpro2020/Downloads/github/flame_platformer/flame_platformer/assets/images/Trap and Weapon",
     "map.fixedSize": true,
     "map.height": 4,
     "map.lastUsedFormat": "tmx",
@@ -107,16 +133,16 @@
     "recentFiles": [
         "castlemap.tmx",
         "forestmap.tmx",
+        "Spear.tsx",
+        "background1.tsx",
+        "bgrd_tree3.tsx",
+        "background3.tsx",
+        "bgrd_tree5.tsx",
+        "main_background.tsx",
         "props2.tsx",
         "mainlev_build.tsx",
         "castle_env.tsx",
-        "Skeleton enemy.tsx",
-        "idle.tsx",
-        "test.tmx",
-        "env_rock.tsx",
-        "env_ground.tsx",
-        "env_trees.tsx",
-        "FirstScene.tsx"
+        "Skeleton enemy.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
