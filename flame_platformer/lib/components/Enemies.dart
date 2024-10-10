@@ -7,12 +7,12 @@ import 'package:flame_platformer/flame_platformer.dart';
 
 enum EnemyState { idle, run, attack }
 
-class BaseEnemy extends SpriteAnimationGroupComponent
+class Enemies extends SpriteAnimationGroupComponent
     with HasGameRef<FlamePlatformer>, CollisionCallbacks {
   final double offNeg;
   final double offPos;
 
-  BaseEnemy({
+  Enemies({
     super.position,
     super.size,
     this.offNeg = 0,
@@ -20,7 +20,7 @@ class BaseEnemy extends SpriteAnimationGroupComponent
   });
 
   static const stepTime = 0.1;
-  static const runSpeed = 80;
+  static const runSpeed = 50;
   final Vector2 textureSize = Vector2(150, 100);
 
   Vector2 velocity = Vector2.zero();
@@ -31,19 +31,23 @@ class BaseEnemy extends SpriteAnimationGroupComponent
   bool gotStomped = false;
   bool isAttacking = false;
 
+  double attackCooldown = 1.5;
+  double cooldownTimer = 0.0;
+
   late final Player player;
+  late final RectangleHitbox enemyHitbox;
 
   @override
   FutureOr<void> onLoad() {
     debugMode = true;
     player = game.player;
 
-    add(
-      RectangleHitbox(
-        position: Vector2(12, 3),
-        size: Vector2(22, 40),
-      ),
+    enemyHitbox = RectangleHitbox(
+      position: Vector2(30, 30),
+      size: Vector2(26, 30),
     );
+
+    add(enemyHitbox);
 
     _calculateRange();
     return super.onLoad();
@@ -52,8 +56,13 @@ class BaseEnemy extends SpriteAnimationGroupComponent
   @override
   void update(double dt) {
     if (!gotStomped) {
-      _updateState();
-      _movement(dt);
+      if (cooldownTimer > 0) {
+        cooldownTimer -= dt;
+        current = EnemyState.idle;
+      } else {
+        _updateState();
+        _movement(dt);
+      }
     }
 
     super.update(dt);
@@ -61,9 +70,7 @@ class BaseEnemy extends SpriteAnimationGroupComponent
   }
 
   void checkAndAttackPlayer(Player player) {
-    double distance = position.distanceTo(player.position);
-
-    if (distance < 50) {
+    if (cooldownTimer <= 0 && enemyHitboxIntersectsPlayer(player)) {
       attackPlayer(player);
     }
   }
@@ -71,16 +78,15 @@ class BaseEnemy extends SpriteAnimationGroupComponent
   void attackPlayer(Player player) {
     if (!isAttacking) {
       isAttacking = true;
-      current = EnemyState.attack; // Chuyển sang trạng thái tấn công
+      current = EnemyState.attack;
 
       double attackAnimationDuration =
           (animations?[EnemyState.attack]?.frames.length ?? 0) * stepTime;
 
-      bool playerStillInHitbox = true;
-
       Future.delayed(
           Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () {
-        if (playerStillInHitbox && playerInHitbox(player)) {
+        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công
+        if (enemyHitboxIntersectsPlayer(player)) {
           Vector2 knockbackDirection;
           if (player.position.x > position.x) {
             knockbackDirection = Vector2(1, 0);
@@ -93,21 +99,22 @@ class BaseEnemy extends SpriteAnimationGroupComponent
         }
 
         isAttacking = false;
-        current = EnemyState.idle; // Quay lại trạng thái idle
-      });
-
-      Future.delayed(
-          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () {
-        playerStillInHitbox = playerInHitbox(player);
+        cooldownTimer = attackCooldown;
+        current = EnemyState.idle;
       });
     }
   }
 
-  bool playerInHitbox(Player player) {
-    return (player.position.x + player.width > position.x) &&
-        (player.position.x < position.x + width) &&
-        (player.position.y + player.height > position.y) &&
-        (player.position.y < position.y + height);
+  bool enemyHitboxIntersectsPlayer(Player player) {
+    // Lấy hitbox của người chơi
+    final playerHitbox =
+        player.children.whereType<RectangleHitbox>().firstOrNull;
+
+    // Kiểm tra nếu hitbox của người chơi tồn tại và nó giao nhau với hitbox của enemy
+    if (playerHitbox != null) {
+      return enemyHitbox.possiblyIntersects(playerHitbox);
+    }
+    return false;
   }
 
   void _calculateRange() {
@@ -141,7 +148,6 @@ class BaseEnemy extends SpriteAnimationGroupComponent
   }
 
   void _updateState() {
-    // Nếu enemy đang tấn công thì không thay đổi trạng thái
     if (isAttacking) return;
     current = (velocity.x != 0) ? EnemyState.run : EnemyState.idle;
 

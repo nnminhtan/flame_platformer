@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies.dart';
 
-class Skeleton extends BaseEnemy {
+class Skeleton extends Enemies {
   Skeleton({
     required Vector2 position,
     required Vector2 size,
@@ -38,7 +38,7 @@ class Skeleton extends BaseEnemy {
       game.images.fromCache('Enemies/Monster/$state.png'),
       SpriteAnimationData.sequenced(
         amount: amount,
-        stepTime: BaseEnemy.stepTime,
+        stepTime: Enemies.stepTime,
         textureSize: textureSize,
       ),
     );
