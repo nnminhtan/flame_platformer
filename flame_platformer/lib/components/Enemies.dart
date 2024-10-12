@@ -7,7 +7,7 @@ import 'package:flame_platformer/flame_platformer.dart';
 
 enum EnemyState { idle, run, attack }
 
-class Enemies extends SpriteAnimationGroupComponent
+abstract class Enemies extends SpriteAnimationGroupComponent
     with HasGameRef<FlamePlatformer>, CollisionCallbacks {
   final double offNeg;
   final double offPos;
@@ -35,19 +35,12 @@ class Enemies extends SpriteAnimationGroupComponent
   double cooldownTimer = 0.0;
 
   late final Player player;
-  late final RectangleHitbox enemyHitbox;
+  RectangleHitbox getHitbox(); //lấy hitbox từ lớp con
 
   @override
   FutureOr<void> onLoad() {
     debugMode = true;
     player = game.player;
-
-    enemyHitbox = RectangleHitbox(
-      position: Vector2(30, 30),
-      size: Vector2(26, 30),
-    );
-
-    add(enemyHitbox);
 
     _calculateRange();
     return super.onLoad();
@@ -69,12 +62,14 @@ class Enemies extends SpriteAnimationGroupComponent
     checkAndAttackPlayer(player);
   }
 
+  //Kiểm tra hết Cooldown và người chơi có trong hitbox không để thực hiện attack
   void checkAndAttackPlayer(Player player) {
     if (cooldownTimer <= 0 && enemyHitboxIntersectsPlayer(player)) {
       attackPlayer(player);
     }
   }
 
+  //Tấn công người chơi
   void attackPlayer(Player player) {
     if (!isAttacking) {
       isAttacking = true;
@@ -105,10 +100,14 @@ class Enemies extends SpriteAnimationGroupComponent
     }
   }
 
+  //Kiểm tra hitbox của người chơi và quái
   bool enemyHitboxIntersectsPlayer(Player player) {
     // Lấy hitbox của người chơi
     final playerHitbox =
         player.children.whereType<RectangleHitbox>().firstOrNull;
+
+    // Lấy hitbox của enemy từ phương thức getHitbox (do lớp con cung cấp)
+    final enemyHitbox = getHitbox();
 
     // Kiểm tra nếu hitbox của người chơi tồn tại và nó giao nhau với hitbox của enemy
     if (playerHitbox != null) {

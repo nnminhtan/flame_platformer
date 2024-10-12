@@ -72,6 +72,8 @@ flutter:
     - assets/images/HUD/
     - assets/images/Trap and Weapon/
     - assets/images/Enemies/Monster/Skeleton/
+    - assets/images/Enemies/Monster/Mushroom/
+    - assets/images/Enemies/Monster/Flying eye/
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

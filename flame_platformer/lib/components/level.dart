@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies.dart';
+import 'package:flame_platformer/components/Flyingeye.dart';
+import 'package:flame_platformer/components/Mushroom.dart';
 import 'package:flame_platformer/components/background_tile.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/player.dart';
@@ -25,15 +27,16 @@ class Level extends World with HasGameRef<FlamePlatformer> {
     _addBackground();
     _spawnObject();
     _addCollision();
-    
+
     // add(Player());
     player.collisionBlocks = collisionBlocks;
     gameRef.cam.follow(
-      player,   // Reference to your Player component
-      maxSpeed: 500,  // Set a speed limit for camera movement
-      horizontalOnly: false,  // Whether to follow horizontally only
-      verticalOnly: false,    // Whether to follow vertically only
-      snap: true,  // If true, the camera snaps to the player instead of moving smoothly
+      player, // Reference to your Player component
+      maxSpeed: 500, // Set a speed limit for camera movement
+      horizontalOnly: false, // Whether to follow horizontally only
+      verticalOnly: false, // Whether to follow vertically only
+      snap:
+          true, // If true, the camera snaps to the player instead of moving smoothly
     );
 
     // TODO: implement onLoad
@@ -42,14 +45,13 @@ class Level extends World with HasGameRef<FlamePlatformer> {
 
   void _addBackground() {
     final backgroundLayer = level.tileMap.getLayer('Background');
-    if(backgroundLayer != null){
+    if (backgroundLayer != null) {
       // final backgroundColor = backgroundLayer.properties.getValue('BackgroundTile');
       final backgroundTile = BackgroundTile(
-        // tiles:  ?? 'forest',
-        position: Vector2(0, 0)
-      );
+          // tiles:  ?? 'forest',
+          position: Vector2(0, 0));
       add(backgroundTile);
-    } 
+    }
   }
 
   void _spawnObject() {
@@ -73,6 +75,28 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(skeleton);
             break;
+          case 'Mushroom':
+            final offNeg = spawnpoint.properties.getValue('offNeg');
+            final offPos = spawnpoint.properties.getValue('offPos');
+            final mushroom = Mushroom(
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+              offNeg: offNeg,
+              offPos: offPos,
+            );
+            add(mushroom);
+            break;
+            case 'Flying eye':
+            final offNeg = spawnpoint.properties.getValue('offNeg');
+            final offPos = spawnpoint.properties.getValue('offPos');
+            final flyingeye = Flyingeye(
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+              offNeg: offNeg,
+              offPos: offPos,
+            );
+            add(flyingeye);
+            break;
 
           case 'Thorn':
             final thorn = Thorn(
@@ -80,13 +104,13 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(thorn);
-          break;
+            break;
           default:
         }
       }
     }
   }
-    
+
   void _addCollision() {
     final collisionLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
 
