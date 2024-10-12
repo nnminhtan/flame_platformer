@@ -69,7 +69,10 @@ flutter:
     - assets/images/Main Character/Run/
     - assets/images/Main Character/Jump/
     - assets/images/Main Character/Fall/
+    - assets/images/Main Character/Normal_Attack/
+    - assets/images/Main Character/Up_Attack/
     - assets/images/HUD/
+    - assets/images/HealthBar/
     - assets/images/Trap and Weapon/
     - assets/images/Enemies/Monster/Skeleton/
     - assets/images/Enemies/Monster/Mushroom/

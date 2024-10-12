@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame_platformer/components/Flyingeye.dart';
 import 'package:flame_platformer/components/Mushroom.dart';
 import 'package:flame_platformer/components/background_tile.dart';
@@ -18,6 +20,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
   Level({required this.levelName, required this.player});
   late TiledComponent level;
   List<CollisionBlock> collisionBlocks = [];
+  late Rect _levelBounds;
 
   @override
   FutureOr<void> onLoad() async {
@@ -28,19 +31,23 @@ class Level extends World with HasGameRef<FlamePlatformer> {
     _spawnObject();
     _addCollision();
 
-    // add(Player());
-    player.collisionBlocks = collisionBlocks;
-    gameRef.cam.follow(
-      player, // Reference to your Player component
-      maxSpeed: 500, // Set a speed limit for camera movement
-      horizontalOnly: false, // Whether to follow horizontally only
-      verticalOnly: false, // Whether to follow vertically only
-      snap:
-          true, // If true, the camera snaps to the player instead of moving smoothly
-    );
-
     // TODO: implement onLoad
     return super.onLoad();
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    _calculateCameraBounds();
+    _setCameraFollow();
+  }
+
+  double getMapWidth() {
+    return (level.tileMap.map.width * level.tileMap.map.tileWidth).toDouble();
+  }
+
+  double getMapHeight() {
+    return (level.tileMap.map.height * level.tileMap.map.tileHeight).toDouble();
   }
 
   void _addBackground() {
@@ -62,6 +69,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
         switch (spawnpoint.class_) {
           case 'Player':
             player.position = Vector2(spawnpoint.x, spawnpoint.y);
+            // player.anchor = Anchor.center;
             add(player);
             break;
           case 'Skeleton':
@@ -86,7 +94,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(mushroom);
             break;
-            case 'Flying eye':
+          case 'Flying eye':
             final offNeg = spawnpoint.properties.getValue('offNeg');
             final offPos = spawnpoint.properties.getValue('offPos');
             final flyingeye = Flyingeye(
@@ -137,16 +145,49 @@ class Level extends World with HasGameRef<FlamePlatformer> {
       }
     }
     player.collisionBlocks = collisionBlocks;
+  }
+
+  void _calculateCameraBounds() {
+    // Define the level bounds based on the tile map size
+    _levelBounds = Rect.fromLTWH(
+      0,
+      0,
+      (level.tileMap.map.width * level.tileMap.map.tileWidth).toDouble(),
+      (level.tileMap.map.height * level.tileMap.map.tileHeight).toDouble(),
+    );
+    print('Level bounds: ${_levelBounds.width} x ${_levelBounds.height}');
+
+    // Get the size of the viewport, considering zoom
+    final adjustedViewportSize =
+        gameRef.cam.viewport.size / gameRef.cam.viewfinder.zoom;
+    print('Viewport size: ${gameRef.cam.viewport.size}');
+    print(
+        'Adjusted viewport size with zoom: ${adjustedViewportSize.x} x ${adjustedViewportSize.y}');
+
+    // Scaling factor, approximately 2.5 (just calculate somehow) for correct bounds
+    final scalingFactor = 2.5;
+
+    final cameraBounds = Rectangle.fromLTRB(
+        0 + (adjustedViewportSize.x / 2) * scalingFactor, // Left boundary
+        0 + (adjustedViewportSize.y / 2) * scalingFactor, // Top boundary
+        _levelBounds.width -
+            (adjustedViewportSize.x / 2) * scalingFactor, // Right boundary
+        _levelBounds.height -
+            (adjustedViewportSize.y / 2) * scalingFactor // Bottom boundary
+        );
+    gameRef.cam.setBounds(cameraBounds);
+    print(
+        'Adjusted Camera bounds: ${cameraBounds.left}, ${cameraBounds.top}, ${cameraBounds.right}, ${cameraBounds.bottom}');
+  }
+
+  void _setCameraFollow() {
     gameRef.cam.follow(
       player, // Reference to your Player component
-      maxSpeed: 500, // Set a speed limit for camera movement
+      maxSpeed: 150, // Set a speed limit for camera movement
       horizontalOnly: false, // Whether to follow horizontally only
       verticalOnly: false, // Whether to follow vertically only
       snap:
           true, // If true, the camera snaps to the player instead of moving smoothly
     );
-
-    // // TODO: implement onLoad
-    // return super.onLoad();
   }
 }

@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "forestmap.tmx",
+    "activeFile": "castlemap.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -19,50 +19,34 @@
             "scaleInDock": 1,
             "scaleInEditor": 3.5437
         },
-        "Spear.tsx": {
-            "scaleInDock": 1,
-            "scaleInEditor": 4.5482
-        },
-        "background1.tsx": {
-            "scaleInDock": 0.2159,
-            "scaleInEditor": 1
-        },
-        "background3.tsx": {
-            "scaleInDock": 0.33,
-            "scaleInEditor": 1
-        },
-        "bgrd_tree3.tsx": {
-            "scaleInDock": 0.33,
-            "scaleInEditor": 1
-        },
-        "bgrd_tree5.tsx": {
-            "scaleInDock": 0.33,
+        "castle_decor.tsx": {
+            "scaleInDock": 1.5,
             "scaleInEditor": 1
         },
         "castle_env.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.33,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "castle_tile.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.33
+            "scaleInDock": 2
         },
         "castlemap.tmx": {
             "expandedObjectLayers": [
                 3,
                 2
             ],
-            "scale": 0.4774,
-            "selectedLayer": 3,
+            "scale": 0.33,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 960.4105571847507,
-                "y": 512.1491411813992
+                "x": 662.1212121212122,
+                "y": 306.0606060606061
             }
         },
         "env_ground.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.33,
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "env_rock.tsx": {
@@ -71,19 +55,18 @@
         },
         "env_trees.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.33,
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "forestmap.tmx": {
             "expandedObjectLayers": [
-                11,
                 8
             ],
-            "scale": 2.2132,
-            "selectedLayer": 10,
+            "scale": 0.125,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 639.5716609434303,
-                "y": 808.105909994578
+                "x": 1272,
+                "y": 508
             }
         },
         "idle.tsx": {
@@ -91,16 +74,12 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
-        "main_background.tsx": {
-            "scaleInDock": 0.33,
-            "scaleInEditor": 0.67
-        },
         "mainlev_build.tsx": {
-            "scaleInDock": 1.0846,
+            "scaleInDock": 1.5534,
             "scaleInEditor": 1
         },
         "props2.tsx": {
-            "scaleInDock": 0.33,
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "temp.tsx": {
@@ -127,22 +106,23 @@
     "map.width": 15,
     "openFiles": [
         "forestmap.tmx",
-        "castlemap.tmx"
+        "castlemap.tmx",
+        "castle_decor.tsx"
     ],
     "project": "FirstScene.tiled-project",
     "recentFiles": [
         "castlemap.tmx",
         "forestmap.tmx",
-        "Spear.tsx",
-        "background1.tsx",
-        "bgrd_tree3.tsx",
-        "background3.tsx",
-        "bgrd_tree5.tsx",
-        "main_background.tsx",
+        "castle_decor.tsx",
         "props2.tsx",
         "mainlev_build.tsx",
         "castle_env.tsx",
-        "Skeleton enemy.tsx"
+        "Skeleton enemy.tsx",
+        "idle.tsx",
+        "test.tmx",
+        "env_rock.tsx",
+        "env_ground.tsx",
+        "env_trees.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

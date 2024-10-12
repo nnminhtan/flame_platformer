@@ -8,11 +8,28 @@ import 'package:flame_platformer/components/utils.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 import 'package:flutter/services.dart';
 
-enum PlayerState { idle, run, jump, fall }
+enum PlayerState {
+  idle,
+  run,
+  jump,
+  fall,
+  normalAttack,
+  upAttack,
+}
 
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<FlamePlatformer>, KeyboardHandler {
-  Player({position}) : super(position: position);
+  Player({position, anchor}) : super(position: position, anchor: anchor);
+
+  // hp
+  // double hp = 100.0;
+  // final double maxHp = 100.0;
+
+  // for attack logic
+  double attackTimer = 0.0;
+  final double attackDuration = 0.75;
+  bool isAttacking = false;
+  bool isUpAttack = false;
 
   // for animation
   final double stepTime = 0.15;
@@ -20,6 +37,8 @@ class Player extends SpriteAnimationGroupComponent
   late final SpriteAnimation runAnimation;
   late final SpriteAnimation jumpAnimation;
   late final SpriteAnimation fallAnimation;
+  late final SpriteAnimation normalAttackAnimation;
+  late final SpriteAnimation upAttackAnimation;
 
   // for movement
   double horizontalMovement = 0;
@@ -55,6 +74,15 @@ class Player extends SpriteAnimationGroupComponent
   void update(double dt) {
     _updatePlayerState();
     _updatePlayerMovement(dt);
+
+    // will add logic to fix attack movement is seperated
+    if (attackTimer > 0) {
+      attackTimer -= dt;
+      if (attackTimer <= 0) {
+        isAttacking = false;
+      }
+    }
+
     _checkHorizontalCollisions();
     _applyGravity(dt);
     _checkVerticalCollisions();
@@ -70,11 +98,20 @@ class Player extends SpriteAnimationGroupComponent
         keysPressed.contains(LogicalKeyboardKey.arrowLeft);
     final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
         keysPressed.contains(LogicalKeyboardKey.arrowRight);
+    // final isUpKeyPressed = keysPressed.contains(LogicalKeyboardKey.arrowUp) ||
+    //     keysPressed.contains(LogicalKeyboardKey.keyW);
+    final isAttackKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyJ);
 
     horizontalMovement += isLeftKeyPressed ? -1 : 0;
     horizontalMovement += isRightKeyPressed ? 1 : 0;
 
     hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
+
+    // still got error with up attack so add more later
+    if (isAttackKeyPressed && !isAttacking) {
+      isAttacking = true;
+      attackTimer = attackDuration;
+    }
 
     return super.onKeyEvent(event, keysPressed);
   }
@@ -85,12 +122,17 @@ class Player extends SpriteAnimationGroupComponent
     runAnimation = await _loadAnimation('Main Character/Run', 6);
     jumpAnimation = await _loadAnimation('Main Character/Jump', 4);
     fallAnimation = await _loadAnimation('Main Character/Fall', 2);
+    normalAttackAnimation =
+        await _loadAnimation('Main Character/Normal_Attack', 6);
+    upAttackAnimation = await _loadAnimation('Main Character/Up_Attack', 5);
 
     animations = {
       PlayerState.idle: idleAnimation,
       PlayerState.run: runAnimation,
       PlayerState.jump: jumpAnimation,
       PlayerState.fall: fallAnimation,
+      PlayerState.normalAttack: normalAttackAnimation,
+      PlayerState.upAttack: upAttackAnimation,
     };
 
     // Set current animation
@@ -113,25 +155,31 @@ class Player extends SpriteAnimationGroupComponent
   void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
 
+    // check flip animation first
     if (velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
     } else if (velocity.x > 0 && scale.x < 0) {
       flipHorizontallyAroundCenter();
     }
 
-    // check if running, set run
-    if (velocity.x > 0 || velocity.x < 0) {
-      playerState = PlayerState.run;
-    }
+    // check logic attack
+    if (isAttacking) {
+      playerState = PlayerState.normalAttack;
+    } else {
+      // check if running, set run
+      if (velocity.x > 0 || velocity.x < 0) {
+        playerState = PlayerState.run;
+      }
 
-    // check if falling, set fall
-    if (velocity.y > 0) {
-      playerState = PlayerState.fall;
-    }
+      // check if falling, set fall
+      if (velocity.y > 0) {
+        playerState = PlayerState.fall;
+      }
 
-    // check if jumping, set jump
-    if (velocity.y < 0) {
-      playerState = PlayerState.jump;
+      // check if jumping, set jump
+      if (velocity.y < 0) {
+        playerState = PlayerState.jump;
+      }
     }
 
     current = playerState;
@@ -163,7 +211,7 @@ class Player extends SpriteAnimationGroupComponent
       // handle collision
       if (!block.isPlatform) {
         // "this" is Player() cause we're in Player class
-        if (checkCollsion(this, block)) {
+        if (checkCollision(this, block)) {
           if (velocity.x > 0) {
             velocity.x = 0;
             position.x = block.x - hitbox.offsetX - hitbox.width;
@@ -188,14 +236,14 @@ class Player extends SpriteAnimationGroupComponent
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
       if (block.isPlatform) {
-        if (checkCollsion(this, block)) {
+        if (checkCollision(this, block)) {
           velocity.y = 0;
           position.y = block.y - hitbox.height - hitbox.offsetY;
           isOnGround = true;
           break;
         }
       } else {
-        if (checkCollsion(this, block)) {
+        if (checkCollision(this, block)) {
           if (velocity.y > 0) {
             velocity.y = 0;
             position.y = block.y - hitbox.height - hitbox.offsetY;

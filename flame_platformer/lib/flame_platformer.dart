@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame_platformer/components/health_bar.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/level.dart';
 import 'package:flutter/painting.dart';
@@ -15,6 +16,7 @@ class FlamePlatformer extends FlameGame
   Player player = Player();
   late JoystickComponent joystick;
   bool isPaused = false;
+  late HealthBar healthBar;
 
   @override
   FutureOr<void> onLoad() async {
@@ -25,13 +27,22 @@ class FlamePlatformer extends FlameGame
       levelName: 'forestmap',
       player: player,
     );
+    await add(world);
 
+    // Get map dimensions
+    final mapWidth = world.getMapWidth();
+    final mapHeight = world.getMapHeight();
+    print('map width x height: $mapWidth x $mapHeight');
+
+    // castle: 1920, forest: 2544
     cam = CameraComponent.withFixedResolution(
-        world: world, width: 1920, height: 1024);
+        world: world, width: mapWidth, height: mapHeight);
     cam.viewfinder.anchor = Anchor.center;
-    cam.viewfinder.zoom = 5.0;
-    // = calculateZoom(1920, 1024, desiredWidth: 800, desiredHeight: 600);  // Example: Zoom to 800x600 area around the player
-    addAll([cam, world]);
+    cam.viewfinder.zoom = 4.0;
+    add(cam);
+    healthBar = HealthBar();
+    add(healthBar);
+    // addAll([cam, world]);
     addJoystick();
     // TODO: implement onLoad
     return super.onLoad();
@@ -52,8 +63,9 @@ class FlamePlatformer extends FlameGame
     if (!isPaused) {
       updateJoystick(); // Call this only if the game is not paused
       super.update(dt); // Update the game logic
-    } 
+    }
   }
+
   void togglePause() {
     isPaused = !isPaused; // Toggle the paused state
     // You might want to also show/hide the pause menu here
@@ -112,5 +124,3 @@ class FlamePlatformer extends FlameGame
     }
   }
 }
-
-
