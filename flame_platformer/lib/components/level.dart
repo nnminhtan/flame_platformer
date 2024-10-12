@@ -8,9 +8,11 @@ import 'package:flame_platformer/components/Flyingeye.dart';
 import 'package:flame_platformer/components/Mushroom.dart';
 import 'package:flame_platformer/components/background_tile.dart';
 import 'package:flame_platformer/components/collision_block.dart';
+import 'package:flame_platformer/components/item.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/Skeleton.dart';
-import 'package:flame_platformer/components/thorn.dart';
+import 'package:flame_platformer/components/traps/spear.dart';
+import 'package:flame_platformer/components/traps/thorn.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
@@ -72,6 +74,14 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             // player.anchor = Anchor.center;
             add(player);
             break;
+          case 'Item':
+            final item = Item(
+                item: spawnpoint.name,
+                position: Vector2(spawnpoint.x, spawnpoint.y),
+                size: Vector2(spawnpoint.width, spawnpoint.height),
+              );
+              add(item);
+          break;
           case 'Skeleton':
             final offNeg = spawnpoint.properties.getValue('offNeg');
             final offPos = spawnpoint.properties.getValue('offPos');
@@ -113,6 +123,14 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(thorn);
             break;
+
+          case 'Spear':
+            final spear = Spear(
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+            );
+            add(spear);
+          break;
           default:
         }
       }

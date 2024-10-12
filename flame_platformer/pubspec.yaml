@@ -71,6 +71,8 @@ flutter:
     - assets/images/Main Character/Fall/
     - assets/images/Main Character/Normal_Attack/
     - assets/images/Main Character/Up_Attack/
+    - assets/images/Main Character/Die/
+    - assets/images/Main Character/Hurt/
     - assets/images/HUD/
     - assets/images/HealthBar/
     - assets/images/Trap and Weapon/

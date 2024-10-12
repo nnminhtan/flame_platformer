@@ -11,7 +11,7 @@ import 'package:flame_platformer/components/level.dart';
 import 'package:flutter/painting.dart';
 
 class FlamePlatformer extends FlameGame
-    with HasKeyboardHandlerComponents, DragCallbacks {
+    with HasKeyboardHandlerComponents, DragCallbacks, HasCollisionDetection {
   late final CameraComponent cam;
   Player player = Player();
   late JoystickComponent joystick;
