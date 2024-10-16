@@ -11,6 +11,7 @@ class AttackButton extends SpriteComponent
   final margin = 32;
   final buttonSize = 64;
   final offsetX = 80;
+  
   @override
   FutureOr<void> onLoad() {
     sprite = Sprite(game.images.fromCache('HUD/AttackButton.png'));
@@ -24,14 +25,7 @@ class AttackButton extends SpriteComponent
 
   @override
   void onTapDown(TapDownEvent event) {
-    game.player.isAttacking = true; // Kích hoạt hành động tấn công của player
+    game.player.attack(); // Gọi phương thức tấn công của player khi ấn vào nút
     super.onTapDown(event);
-  }
-
-  @override
-  void onTapUp(TapUpEvent event) {
-    game.player.isAttacking =
-        false; // Tắt hành động tấn công của player khi nhả nút
-    super.onTapUp(event);
   }
 }

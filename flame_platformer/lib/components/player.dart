@@ -27,7 +27,8 @@ enum PlayerState {
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<FlamePlatformer>, KeyboardHandler, CollisionCallbacks {
   Player({position}) : super(position: position);
-
+  //default PlayerState
+  PlayerState playerState = PlayerState.idle;
   // hp
   double hp = 100.0;
   final double maxHp = 100.0;
@@ -154,7 +155,8 @@ class Player extends SpriteAnimationGroupComponent
         await _loadAnimation('Main Character/Normal_Attack', 6);
     upAttackAnimation = await _loadAnimation('Main Character/Up_Attack', 5);
     hurtAnimation = await _loadAnimation('Main Character/Hurt', 6);
-    dieAnimation = await _loadAnimation('Main Character/Die', 10)..loop = false;
+    dieAnimation = await _loadAnimation('Main Character/Die', 10)
+      ..loop = false;
 
     animations = {
       PlayerState.idle: idleAnimation,
@@ -238,10 +240,19 @@ class Player extends SpriteAnimationGroupComponent
     hasJumped = false;
   }
 
+  void attack() {
+    if (!isAttacking) {
+      // Kiểm tra nếu player chưa đang tấn công
+      isAttacking = true;
+      attackTimer = attackDuration; // Đặt thời gian tấn công
+      playerState = PlayerState.normalAttack; // Đặt trạng thái tấn công
+    }
+  }
+
   //player collied with object
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if(!reachedCheckpoint){
+    if (!reachedCheckpoint) {
       if (other is Enemies && isAttacking) {
         other.takeDamage(20);
       }
@@ -278,7 +289,7 @@ class Player extends SpriteAnimationGroupComponent
         //     break;
         // }
       }
-      if(other is Checkpoint) _reachedCheckpoint();
+      if (other is Checkpoint) _reachedCheckpoint();
     }
     super.onCollision(intersectionPoints, other);
   }
@@ -336,7 +347,7 @@ class Player extends SpriteAnimationGroupComponent
     }
   }
 
-  void _respawn() async{
+  void _respawn() async {
     // const hitDuration = Duration(milliseconds: 100 * 10);
     // const canmoveDuration = Duration(milliseconds: 100 * 10);
 
@@ -344,7 +355,7 @@ class Player extends SpriteAnimationGroupComponent
     current = PlayerState.die;
     await animationTicker?.completed;
     animationTicker?.reset();
-    
+
     scale.x = 1;
     position = startingPosition;
     hp = maxHp;
@@ -412,14 +423,14 @@ class Player extends SpriteAnimationGroupComponent
   //     print("you deer");
   //   }
   // }
-  
+
   void _reachedCheckpoint() {
     reachedCheckpoint = true;
     const waitforAnimation = Duration(milliseconds: 400);
     Future.delayed(waitforAnimation, () {
       //add the disappear animation
       reachedCheckpoint = false;
-      position = Vector2(position.x + 1000,position.y);
+      position = Vector2(position.x + 1000, position.y);
 
       const waitToChangeDuration = Duration(seconds: 2);
       Future.delayed(waitToChangeDuration, () => game.loadNextLevel());

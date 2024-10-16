@@ -24,7 +24,6 @@ class FlamePlatformer extends FlameGame
   List<String> levelNames = ['forestmap', 'castlemap'];
   int currentLevelIndex = 0;
 
-
   @override
   FutureOr<void> onLoad() async {
     isPaused = true;
@@ -101,6 +100,8 @@ class FlamePlatformer extends FlameGame
       margin: const EdgeInsets.only(left: 64, bottom: 32),
     );
     add(joystick);
+    add(AttackButton());
+    add(JumpButton());
   }
 
   void updateJoystick() {
@@ -127,7 +128,7 @@ class FlamePlatformer extends FlameGame
         break;
     }
   }
-  
+
   void loadNextLevel() {
     removeWhere((component) => component is Level);
 
@@ -141,7 +142,7 @@ class FlamePlatformer extends FlameGame
     }
   }
 
-  void _loadLevel() async{
+  void _loadLevel() async {
     Future.delayed(const Duration(seconds: 1), () async {
       // addJoystick();
       final world = Level(

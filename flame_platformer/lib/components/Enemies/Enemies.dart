@@ -68,7 +68,30 @@ abstract class Enemies extends SpriteAnimationGroupComponent
 
   //Kiểm tra hết Cooldown và người chơi có trong hitbox không để thực hiện attack
   void checkAndAttackPlayer(Player player) {
-    if (cooldownTimer <= 0 && enemyHitboxIntersectsPlayer(player)) {
+    // Tính khoảng cách giữa quái vật và người chơi
+    double attackRange = 10.0; // Định nghĩa khoảng cách tấn công
+
+    // Kiểm tra xem người chơi có nằm trong khoảng cách tấn công không
+    bool isInAttackRange =
+        (player.position.x + player.width >= position.x - attackRange &&
+                player.position.x <= position.x + width + attackRange) &&
+            (player.position.y + player.height >= position.y - attackRange &&
+                player.position.y <= position.y + height + attackRange);
+
+    if (cooldownTimer <= 0 && isInAttackRange) {
+      if (player.position.x > position.x) {
+        // Người chơi ở bên phải
+        if (scale.x < 0) {
+          flipHorizontallyAroundCenter();
+        }
+      } else {
+        // Người chơi ở bên trái
+        if (scale.x > 0) {
+          flipHorizontallyAroundCenter();
+        }
+      }
+
+      // Thực hiện tấn công
       attackPlayer(player);
     }
   }
