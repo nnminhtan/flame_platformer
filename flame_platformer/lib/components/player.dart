@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_platformer/components/Enemies.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
 import 'package:flame_platformer/components/item.dart';
@@ -17,7 +18,7 @@ enum PlayerState {
   jump,
   fall,
   normalAttack,
-  upAttack, 
+  upAttack,
   hurt,
   die,
 }
@@ -27,8 +28,8 @@ class Player extends SpriteAnimationGroupComponent
   Player({position}) : super(position: position);
 
   // hp
-  // double hp = 100.0;
-  // final double maxHp = 100.0;
+  double hp = 100.0;
+  final double maxHp = 100.0;
 
   // for attack logic
   double attackTimer = 0.0;
@@ -64,7 +65,7 @@ class Player extends SpriteAnimationGroupComponent
   double hurtCooldown = 2.0; // 2-second cooldown
   double _cooldownTimer = 0.0; // Track remaining cooldown time
   bool gotHit = false;
-  int _hitTime = 0;
+  // int _hitTime = 0;
 
   bool isOnGround = false;
   bool hasJumped = false;
@@ -197,12 +198,10 @@ class Player extends SpriteAnimationGroupComponent
       if (velocity.x > 0 || velocity.x < 0) {
         playerState = PlayerState.run;
       }
-
-    // check if falling, set fall
-    if (velocity.y > 0 && !gotHit) {
-      playerState = PlayerState.fall;
-    }
-
+      // check if falling, set fall
+      if (velocity.y > 0 && !gotHit) {
+        playerState = PlayerState.fall;
+      }
       // check if jumping, set jump
       if (velocity.y < 0) {
         playerState = PlayerState.jump;
@@ -236,28 +235,41 @@ class Player extends SpriteAnimationGroupComponent
   //player collied with object
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is Enemies && isAttacking) {
+      other.takeDamage(20);
+    }
+
     if (other is Item) {
       other.collidedwithPlayer();
     }
 
-    if ((other is Thorn || other is Spear) && (_cooldownTimer <= 0 && gotHit == false)) {
-      switch (_hitTime) {
-        case 0:
-        case 1:
-        case 2:
-          // Player collided with the thorn/spear, is not on cooldown, and hasn't reached the hit limit
-          _gotHurt(); // Call the hurt method
-          _cooldownTimer = hurtCooldown; // Reset the cooldown timer
-          break;
-        case 3:
-          // When the player hits the limit, respawn
-          _respawn(); // Call respawn method
-          _hitTime = 0; // Reset the hit counter
-          print(_hitTime); // Debug output
-          break;
-        default:
-          break;
+    if ((other is Thorn || other is Spear) &&
+        (_cooldownTimer <= 0 && gotHit == false)) {
+      if (hp > 0) {
+        takeDamage(10);
+        _cooldownTimer = hurtCooldown;
       }
+
+      if (hp <= 0) {
+        _respawn();
+      }
+      // switch (_hitTime) {
+      //   case 0:
+      //   case 1:
+      //   case 2:
+      //     // Player collided with the thorn/spear, is not on cooldown, and hasn't reached the hit limit
+      //     _gotHurt(); // Call the hurt method
+      //     _cooldownTimer = hurtCooldown; // Reset the cooldown timer
+      //     break;
+      //   case 3:
+      //     // When the player hits the limit, respawn
+      //     _respawn(); // Call respawn method
+      //     _hitTime = 0; // Reset the hit counter
+      //     print(_hitTime); // Debug output
+      //     break;
+      //   default:
+      //     break;
+      // }
     }
 
     super.onCollision(intersectionPoints, other);
@@ -324,10 +336,10 @@ class Player extends SpriteAnimationGroupComponent
     current = PlayerState.die;
     // final dieAnimation = animationTickers![PlayerState.die]!;
     // dieAnimation.completed.whenComplete(() {
-      // current = PlayerState.appearing;
-      // print(startingPosition);
-      // dieAnimation.reset();
-      Future.delayed(hitDuration, () {
+    // current = PlayerState.appearing;
+    // print(startingPosition);
+    // dieAnimation.reset();
+    Future.delayed(hitDuration, () {
       Future.delayed(canmoveDuration, () {
         scale.x = 1;
         position = startingPosition;
@@ -335,19 +347,28 @@ class Player extends SpriteAnimationGroupComponent
         gotHit = false;
       });
     });
+    hp = maxHp;
   }
 
-  void _gotHurt() {
+  void takeDamage(double damage) {
     //6 frame so * 6
     const hitDuration = Duration(milliseconds: 30 * 6);
     const canmoveDuration = Duration(milliseconds: 40 * 6);
 
     gotHit = true;
     current = PlayerState.hurt;
-      position.x = position.x - 15;
-      // position.y = position.y - 5;
-    _hitTime = _hitTime + 1;
-    print(_hitTime);
+    position.x = position.x - 15;
+    // position.y = position.y - 5;
+    // _hitTime = _hitTime + 1;
+    // print(_hitTime);
+
+    hp -= damage;
+    hp = hp.clamp(0, 100); // keep the value stay in range
+    print("hp: $hp");
+    if (hp <= 0) {
+      print("you deer");
+    }
+
     Future.delayed(hitDuration, () {
       Future.delayed(canmoveDuration, () {
         gotHit = false;
@@ -364,4 +385,13 @@ class Player extends SpriteAnimationGroupComponent
     //   hitAnimation.reset();
     // });
   }
+
+  // void takeDamage(double damage) {
+  //   hp -= damage;
+  //   hp = hp.clamp(0, 100);
+  //   print("hp: $hp");
+  //   if (hp <= 0) {
+  //     print("you deer");
+  //   }
+  // }
 }

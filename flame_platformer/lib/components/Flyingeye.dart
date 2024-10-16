@@ -3,12 +3,18 @@ import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies.dart';
 
 class Flyingeye extends Enemies {
-  Flyingeye({
-    required Vector2 position,
-    required Vector2 size,
-    required double offNeg,
-    required double offPos,
-  }) : super(position: position, size: size, offNeg: offNeg, offPos: offPos);
+  Flyingeye(
+      {required Vector2 position,
+      required Vector2 size,
+      required double offNeg,
+      required double offPos,
+      required double maxHp})
+      : super(
+            position: position,
+            size: size,
+            offNeg: offNeg,
+            offPos: offPos,
+            maxHp: maxHp);
 
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;

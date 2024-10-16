@@ -8,7 +8,13 @@ class Skeleton extends Enemies {
     required Vector2 size,
     required double offNeg,
     required double offPos,
-  }) : super(position: position, size: size, offNeg: offNeg, offPos: offPos);
+    required double maxHp,
+  }) : super(
+            position: position,
+            size: size,
+            offNeg: offNeg,
+            offPos: offPos,
+            maxHp: maxHp);
 
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;
@@ -17,17 +23,21 @@ class Skeleton extends Enemies {
 
   @override
   Future<void> onLoad() async {
-    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
+    skeletonHitbox = RectangleHitbox(
+      position: Vector2(45, 55), // Vị trí và kích thước riêng cho Skeleton
+      size: Vector2(40, 55),
+    );
+    add(skeletonHitbox); // Thêm hitbox vào component
 
     _loadAllAnimations();
     current = EnemyState.idle; // Đặt trạng thái ban đầu
 
-     skeletonHitbox = RectangleHitbox(
-      position: Vector2(45, 55), // Vị trí và kích thước riêng cho Skeleton
-      size: Vector2(40, 55),
-    );
+    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
+  }
 
-    add(skeletonHitbox); // Thêm hitbox vào component
+  @override
+  void update(double dt) {
+    super.update(dt);
   }
 
   // Ghi đè phương thức getHitbox để trả về skeletonHitbox

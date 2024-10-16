@@ -5,7 +5,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
-import 'package:flame_platformer/components/health_bar.dart';
+import 'package:flame_platformer/components/healthbar/health_bar.dart';
+import 'package:flame_platformer/components/healthbar/player_health_bar.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/level.dart';
 import 'package:flutter/painting.dart';
@@ -26,7 +27,7 @@ class FlamePlatformer extends FlameGame
     final world = Level(
       levelName: 'forestmap',
       player: player,
-    );
+    )..priority = 0;
     await add(world);
 
     // Get map dimensions
@@ -36,14 +37,17 @@ class FlamePlatformer extends FlameGame
 
     // castle: 1920, forest: 2544
     cam = CameraComponent.withFixedResolution(
-        world: world, width: mapWidth, height: mapHeight);
+        world: world, width: mapWidth, height: mapHeight)
+      ..priority = 1;
     cam.viewfinder.anchor = Anchor.center;
     cam.viewfinder.zoom = 4.0;
     add(cam);
-    healthBar = HealthBar();
+
+    healthBar = PlayerHealthBar(player)..priority = 5;
     add(healthBar);
     // addAll([cam, world]);
     addJoystick();
+    // children.sort((a, b) => a.priority.compareTo(b.priority));
     // TODO: implement onLoad
     return super.onLoad();
   }
@@ -73,7 +77,7 @@ class FlamePlatformer extends FlameGame
 
   void addJoystick() {
     joystick = JoystickComponent(
-      priority: 100,
+      priority: 5,
       knob: SpriteComponent(
         sprite: Sprite(
           images.fromCache('HUD/Knob.png'),

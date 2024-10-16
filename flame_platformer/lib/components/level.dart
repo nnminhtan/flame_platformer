@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame_platformer/components/Enemies.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame_platformer/components/Flyingeye.dart';
 import 'package:flame_platformer/components/Mushroom.dart';
 import 'package:flame_platformer/components/background_tile.dart';
 import 'package:flame_platformer/components/collision_block.dart';
+import 'package:flame_platformer/components/healthbar/enemy_health_bar.dart';
 import 'package:flame_platformer/components/item.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/Skeleton.dart';
@@ -76,22 +76,23 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             break;
           case 'Item':
             final item = Item(
-                item: spawnpoint.name,
-                position: Vector2(spawnpoint.x, spawnpoint.y),
-                size: Vector2(spawnpoint.width, spawnpoint.height),
-              );
-              add(item);
-          break;
+              item: spawnpoint.name,
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+            );
+            add(item);
+            break;
           case 'Skeleton':
             final offNeg = spawnpoint.properties.getValue('offNeg');
             final offPos = spawnpoint.properties.getValue('offPos');
             final skeleton = Skeleton(
-              position: Vector2(spawnpoint.x, spawnpoint.y),
-              size: Vector2(spawnpoint.width, spawnpoint.height),
-              offNeg: offNeg,
-              offPos: offPos,
-            );
+                position: Vector2(spawnpoint.x, spawnpoint.y),
+                size: Vector2(spawnpoint.width, spawnpoint.height),
+                offNeg: offNeg,
+                offPos: offPos,
+                maxHp: 150);
             add(skeleton);
+            // add(EnemyHealthBar(skeleton));
             break;
           case 'Mushroom':
             final offNeg = spawnpoint.properties.getValue('offNeg');
@@ -101,8 +102,10 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
               offNeg: offNeg,
               offPos: offPos,
+              maxHp: 100,
             );
             add(mushroom);
+            add(EnemyHealthBar(mushroom));
             break;
           case 'Flying eye':
             final offNeg = spawnpoint.properties.getValue('offNeg');
@@ -112,6 +115,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
               offNeg: offNeg,
               offPos: offPos,
+              maxHp: 150,
             );
             add(flyingeye);
             break;
@@ -130,7 +134,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(spear);
-          break;
+            break;
           default:
         }
       }

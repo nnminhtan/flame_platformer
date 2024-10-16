@@ -8,7 +8,13 @@ class Mushroom extends Enemies {
     required Vector2 size,
     required double offNeg,
     required double offPos,
-  }) : super(position: position, size: size, offNeg: offNeg, offPos: offPos);
+    required double maxHp,
+  }) : super(
+            position: position,
+            size: size,
+            offNeg: offNeg,
+            offPos: offPos,
+            maxHp: maxHp);
 
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;
@@ -17,8 +23,6 @@ class Mushroom extends Enemies {
 
   @override
   Future<void> onLoad() async {
-    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
-
     _loadAllAnimations();
     current = EnemyState.idle; // Đặt trạng thái ban đầu
 
@@ -28,6 +32,8 @@ class Mushroom extends Enemies {
     );
 
     add(mushroomHitbox); // Thêm hitbox vào component
+
+    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
   }
 
   // Ghi đè phương thức getHitbox để trả về skeletonHitbox

@@ -12,12 +12,16 @@ abstract class Enemies extends SpriteAnimationGroupComponent
   final double offNeg;
   final double offPos;
 
+  double hp = 100.0;
+  final double maxHp;
+
   Enemies({
     super.position,
     super.size,
     this.offNeg = 0,
     this.offPos = 0,
-  });
+    required this.maxHp,
+  }) : hp = maxHp;
 
   static const stepTime = 0.1;
   static const runSpeed = 50;
@@ -91,6 +95,7 @@ abstract class Enemies extends SpriteAnimationGroupComponent
 
           double knockbackStrength = 50;
           player.position.add(knockbackDirection * knockbackStrength);
+          player.takeDamage(20);
         }
 
         isAttacking = false;
@@ -154,5 +159,18 @@ abstract class Enemies extends SpriteAnimationGroupComponent
         (moveDirection < 0 && scale.x > 0)) {
       flipHorizontallyAroundCenter();
     }
+  }
+
+  void takeDamage(double damage) {
+    hp -= damage;
+    hp = hp.clamp(0, 150);
+    print("Enemy HP: $hp");
+    if (hp <= 0) {
+      die();
+    }
+  }
+
+  void die() {
+    removeFromParent();
   }
 }
