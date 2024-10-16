@@ -6,6 +6,7 @@ import 'package:flame/experimental.dart';
 import 'package:flame_platformer/components/Flyingeye.dart';
 import 'package:flame_platformer/components/Mushroom.dart';
 import 'package:flame_platformer/components/background_tile.dart';
+import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/healthbar/enemy_health_bar.dart';
 import 'package:flame_platformer/components/item.dart';
@@ -134,7 +135,16 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(spear);
-            break;
+          break;
+
+          case 'Checkpoint':
+            final checkpoint = Checkpoint(
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+            );
+            add(checkpoint);
+          break;
+          
           default:
         }
       }

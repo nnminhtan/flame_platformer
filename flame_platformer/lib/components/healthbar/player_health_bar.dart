@@ -23,18 +23,18 @@ class PlayerHealthBar extends HealthBar {
     background = SpriteComponent()
       ..sprite = await gameRef.loadSprite('HealthBar/Bar.png')
       ..size = Vector2(barWidth, barHeight)
-      ..position = Vector2(20, 10);
+      ..position = Vector2(30, 20);
     add(background);
 
     heartIcon = SpriteComponent()
       ..sprite = await gameRef.loadSprite('HealthBar/Heart.png')
       ..size = Vector2(20, 20)
-      ..position = Vector2(20, 10);
+      ..position = Vector2(30, 20);
     add(heartIcon);
 
     hpNumber = TextComponent(
       text: '${entity.hp.toInt()}',
-      position: Vector2(barWidth - 20, 10),
+      position: Vector2(barWidth - 30, 20),
       textRenderer:
           TextPaint(style: TextStyle(color: Colors.white, fontSize: 15)),
     );
@@ -49,6 +49,6 @@ class PlayerHealthBar extends HealthBar {
 
   @override
   void setHealthBarPosition() {
-    healthBar.position = Vector2(20, 10);
+    healthBar.position = Vector2(30, 20);
   }
 }

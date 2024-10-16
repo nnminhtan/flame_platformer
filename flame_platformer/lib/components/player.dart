@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies.dart';
+import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
 import 'package:flame_platformer/components/item.dart';
@@ -62,6 +63,9 @@ class Player extends SpriteAnimationGroupComponent
   final double _jumpForce = 250; //460
   final double _terminalVelocity = 300;
 
+  //checkpoint
+  bool reachedCheckpoint = false;
+
   double hurtCooldown = 2.0; // 2-second cooldown
   double _cooldownTimer = 0.0; // Track remaining cooldown time
   bool gotHit = false;
@@ -92,7 +96,7 @@ class Player extends SpriteAnimationGroupComponent
 
   @override
   void update(double dt) {
-    if (!gotHit) {
+    if (!gotHit && !reachedCheckpoint) {
       _updatePlayerState();
       _updatePlayerMovement(dt);
       // will add logic to fix attack movement is seperated
@@ -150,7 +154,7 @@ class Player extends SpriteAnimationGroupComponent
         await _loadAnimation('Main Character/Normal_Attack', 6);
     upAttackAnimation = await _loadAnimation('Main Character/Up_Attack', 5);
     hurtAnimation = await _loadAnimation('Main Character/Hurt', 6);
-    dieAnimation = await _loadAnimation('Main Character/Die', 10);
+    dieAnimation = await _loadAnimation('Main Character/Die', 10)..loop = false;
 
     animations = {
       PlayerState.idle: idleAnimation,
@@ -235,43 +239,45 @@ class Player extends SpriteAnimationGroupComponent
   //player collied with object
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is Enemies && isAttacking) {
-      other.takeDamage(20);
-    }
-
-    if (other is Item) {
-      other.collidedwithPlayer();
-    }
-
-    if ((other is Thorn || other is Spear) &&
-        (_cooldownTimer <= 0 && gotHit == false)) {
-      if (hp > 0) {
-        takeDamage(10);
-        _cooldownTimer = hurtCooldown;
+    if(!reachedCheckpoint){
+      if (other is Enemies && isAttacking) {
+        other.takeDamage(20);
       }
 
-      if (hp <= 0) {
-        _respawn();
+      if (other is Item) {
+        other.collidedwithPlayer();
       }
-      // switch (_hitTime) {
-      //   case 0:
-      //   case 1:
-      //   case 2:
-      //     // Player collided with the thorn/spear, is not on cooldown, and hasn't reached the hit limit
-      //     _gotHurt(); // Call the hurt method
-      //     _cooldownTimer = hurtCooldown; // Reset the cooldown timer
-      //     break;
-      //   case 3:
-      //     // When the player hits the limit, respawn
-      //     _respawn(); // Call respawn method
-      //     _hitTime = 0; // Reset the hit counter
-      //     print(_hitTime); // Debug output
-      //     break;
-      //   default:
-      //     break;
-      // }
-    }
 
+      if ((other is Thorn || other is Spear) &&
+          (_cooldownTimer <= 0 && gotHit == false)) {
+        if (hp > 0) {
+          takeDamage(10);
+          _cooldownTimer = hurtCooldown;
+        }
+
+        if (hp <= 0) {
+          _respawn();
+        }
+        // switch (_hitTime) {
+        //   case 0:
+        //   case 1:
+        //   case 2:
+        //     // Player collided with the thorn/spear, is not on cooldown, and hasn't reached the hit limit
+        //     _gotHurt(); // Call the hurt method
+        //     _cooldownTimer = hurtCooldown; // Reset the cooldown timer
+        //     break;
+        //   case 3:
+        //     // When the player hits the limit, respawn
+        //     _respawn(); // Call respawn method
+        //     _hitTime = 0; // Reset the hit counter
+        //     print(_hitTime); // Debug output
+        //     break;
+        //   default:
+        //     break;
+        // }
+      }
+      if(other is Checkpoint) _reachedCheckpoint();
+    }
     super.onCollision(intersectionPoints, other);
   }
 
@@ -328,26 +334,36 @@ class Player extends SpriteAnimationGroupComponent
     }
   }
 
-  void _respawn() {
-    const hitDuration = Duration(milliseconds: 100 * 10);
-    const canmoveDuration = Duration(milliseconds: 100 * 10);
+  void _respawn() async{
+    // const hitDuration = Duration(milliseconds: 100 * 10);
+    // const canmoveDuration = Duration(milliseconds: 100 * 10);
 
     gotHit = true;
     current = PlayerState.die;
-    // final dieAnimation = animationTickers![PlayerState.die]!;
-    // dieAnimation.completed.whenComplete(() {
-    // current = PlayerState.appearing;
-    // print(startingPosition);
-    // dieAnimation.reset();
-    Future.delayed(hitDuration, () {
-      Future.delayed(canmoveDuration, () {
-        scale.x = 1;
-        position = startingPosition;
-        current = PlayerState.idle;
-        gotHit = false;
-      });
-    });
+    await animationTicker?.completed;
+    animationTicker?.reset();
+    
+    scale.x = 1;
+    position = startingPosition;
     hp = maxHp;
+    current = PlayerState.idle;
+    gotHit = false;
+    _updatePlayerState();
+
+    // final dieAnimation = animationTickers![PlayerState.die]!;
+    // dieAnimation.completed.whenComplete( () {
+    //   current = PlayerState.appearing;
+    //   print(startingPosition);
+    //   dieAnimation.reset();
+    // });
+    // Future.delayed(hitDuration, () {
+    //   Future.delayed(canmoveDuration, () {
+    //     scale.x = 1;
+    //     position = startingPosition;
+    //     current = PlayerState.idle;
+    //     gotHit = false;
+    //   });
+    // });)
   }
 
   void takeDamage(double damage) {
@@ -394,4 +410,17 @@ class Player extends SpriteAnimationGroupComponent
   //     print("you deer");
   //   }
   // }
+  
+  void _reachedCheckpoint() {
+    reachedCheckpoint = true;
+    const waitforAnimation = Duration(milliseconds: 400);
+    Future.delayed(waitforAnimation, () {
+      //add the disappear animation
+      reachedCheckpoint = false;
+      position = Vector2(position.x + 1000,position.y);
+
+      const waitToChangeDuration = Duration(seconds: 2);
+      Future.delayed(waitToChangeDuration, () => game.loadNextLevel());
+    });
+  }
 }

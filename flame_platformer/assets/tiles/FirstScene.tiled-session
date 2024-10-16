@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "forestmap.tmx",
+    "activeFile": "castlemap.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -49,11 +49,11 @@
                 3,
                 2
             ],
-            "scale": 0.33,
-            "selectedLayer": 2,
+            "scale": 2.967,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 1028.7878787878788,
-                "y": 628.7878787878788
+                "x": 685.3724300640376,
+                "y": 782.103134479272
             }
         },
         "env_ground.tsx": {
@@ -74,11 +74,11 @@
             "expandedObjectLayers": [
                 8
             ],
-            "scale": 0.9923,
+            "scale": 2.9492,
             "selectedLayer": 10,
             "viewCenter": {
-                "x": 203.06358964022976,
-                "y": 570.8958984178172
+                "x": 1272.0398752203987,
+                "y": 509.7992675979927
             }
         },
         "idle.tsx": {
@@ -126,9 +126,9 @@
     ],
     "project": "FirstScene.tiled-project",
     "recentFiles": [
+        "forestmap.tmx",
         "castle_decor.tsx",
         "castlemap.tmx",
-        "forestmap.tmx",
         "props2.tsx",
         "mainlev_build.tsx",
         "castle_env.tsx",
