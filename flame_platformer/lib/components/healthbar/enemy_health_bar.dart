@@ -1,5 +1,5 @@
 import 'package:flame/components.dart';
-import 'package:flame_platformer/components/Enemies.dart';
+import 'package:flame_platformer/components/Enemies/Enemies.dart';
 import 'package:flame_platformer/components/healthbar/health_bar.dart';
 import 'package:flutter/material.dart';
 

@@ -7,6 +7,8 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_platformer/components/healthbar/health_bar.dart';
 import 'package:flame_platformer/components/healthbar/player_health_bar.dart';
+import 'package:flame_platformer/components/ControlButton/Jump_Button.dart';
+import 'package:flame_platformer/components/ControlButton/attack_button.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/level.dart';
 import 'package:flutter/painting.dart';
@@ -106,27 +108,17 @@ class FlamePlatformer extends FlameGame
       //side and down
       case JoystickDirection.left:
       case JoystickDirection.downLeft:
+      case JoystickDirection.upLeft:
         // print('Joystick Dir: ${joystick.direction}');
         player.horizontalMovement = -1;
         break;
       case JoystickDirection.right:
       case JoystickDirection.downRight:
+      case JoystickDirection.upRight:
         // print('Joystick Dir: ${joystick.direction}');
         player.horizontalMovement = 1;
         break;
       //change this later to jump
-      case JoystickDirection.upLeft:
-        player.horizontalMovement = -1;
-        player.hasJumped = true;
-        // print('Joystick Dir: ${joystick.direction}');
-        // Player().playerDirection = PlayerDirection.left;
-        break;
-      case JoystickDirection.upRight:
-        player.horizontalMovement = 1;
-        player.hasJumped = true;
-        // print('Joystick Dir: ${joystick.direction}');
-        // Player().playerDirection = PlayerDirection.right;
-        break;
 
       //stop
       default:

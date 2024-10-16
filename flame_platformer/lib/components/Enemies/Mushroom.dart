@@ -1,15 +1,15 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame_platformer/components/Enemies.dart';
+import 'package:flame_platformer/components/Enemies/Enemies.dart';
 
-class Flyingeye extends Enemies {
-  Flyingeye(
-      {required Vector2 position,
-      required Vector2 size,
-      required double offNeg,
-      required double offPos,
-      required double maxHp})
-      : super(
+class Mushroom extends Enemies {
+  Mushroom({
+    required Vector2 position,
+    required Vector2 size,
+    required double offNeg,
+    required double offPos,
+    required double maxHp,
+  }) : super(
             position: position,
             size: size,
             offNeg: offNeg,
@@ -19,33 +19,33 @@ class Flyingeye extends Enemies {
   late final SpriteAnimation _idleAnimation;
   late final SpriteAnimation _runAnimation;
   late final SpriteAnimation _attackAnimation;
-  late final RectangleHitbox flyingeyeHitbox;
+  late final RectangleHitbox mushroomHitbox;
 
   @override
   Future<void> onLoad() async {
-    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
-
     _loadAllAnimations();
     current = EnemyState.idle; // Đặt trạng thái ban đầu
 
-    flyingeyeHitbox = RectangleHitbox(
-      position: Vector2(25, 30),
+    mushroomHitbox = RectangleHitbox(
+      position: Vector2(25, 33),
       size: Vector2(22, 30),
     );
 
-    add(flyingeyeHitbox); // Thêm hitbox vào component
+    add(mushroomHitbox); // Thêm hitbox vào component
+
+    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
   }
 
   // Ghi đè phương thức getHitbox để trả về skeletonHitbox
   @override
   RectangleHitbox getHitbox() {
-    return flyingeyeHitbox;
+    return mushroomHitbox;
   }
 
   void _loadAllAnimations() {
-    _idleAnimation = _spriteAnimation('Flying eye/Flight', 8);
-    _runAnimation = _spriteAnimation('Flying eye/Flight', 8);
-    _attackAnimation = _spriteAnimation('Flying eye/Attack', 8)..loop = false;
+    _idleAnimation = _spriteAnimation('Mushroom/Idle', 4);
+    _runAnimation = _spriteAnimation('Mushroom/Run', 8);
+    _attackAnimation = _spriteAnimation('Mushroom/Attack', 8)..loop = false;
 
     animations = {
       EnemyState.idle: _idleAnimation,

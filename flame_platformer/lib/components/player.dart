@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame_platformer/components/Enemies.dart';
+import 'package:flame_platformer/components/Enemies/Enemies.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
@@ -202,10 +202,12 @@ class Player extends SpriteAnimationGroupComponent
       if (velocity.x > 0 || velocity.x < 0) {
         playerState = PlayerState.run;
       }
+
       // check if falling, set fall
       if (velocity.y > 0 && !gotHit) {
         playerState = PlayerState.fall;
       }
+
       // check if jumping, set jump
       if (velocity.y < 0) {
         playerState = PlayerState.jump;
