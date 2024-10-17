@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_platformer/components/custom_hitbox.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 
@@ -14,6 +15,9 @@ abstract class Enemies extends SpriteAnimationGroupComponent
 
   double hp = 100.0;
   final double maxHp;
+
+  late RectangleHitbox attackHitbox; // Store the hitbox to remove it later
+  var hitbox = CustomHitbox(offsetX: 60, offsetY: 60, width: 50, height: 50);
 
   Enemies({
     super.position,
@@ -45,7 +49,8 @@ abstract class Enemies extends SpriteAnimationGroupComponent
   FutureOr<void> onLoad() {
     debugMode = true;
     player = game.player;
-
+    addAttackHitbox();
+    remove(attackHitbox);
     _calculateRange();
     return super.onLoad();
   }
@@ -104,27 +109,34 @@ abstract class Enemies extends SpriteAnimationGroupComponent
 
       double attackAnimationDuration =
           (animations?[EnemyState.attack]?.frames.length ?? 0) * stepTime;
-
       Future.delayed(
-          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () {
-        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công
-        if (enemyHitboxIntersectsPlayer(player)) {
-          Vector2 knockbackDirection;
-          if (player.position.x > position.x) {
-            knockbackDirection = Vector2(1, 0);
-          } else {
-            knockbackDirection = Vector2(-1, 0);
-          }
+          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () async {
+        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công      
+        await addAttackHitbox();
 
-          double knockbackStrength = 50;
-          player.position.add(knockbackDirection * knockbackStrength);
-          player.takeDamage(20);
-        }
+        Future.delayed(const Duration(milliseconds: 50), () {
+          if (enemyHitboxIntersectsPlayer(player)) {
+            Vector2 knockbackDirection;
+            if (player.position.x > position.x) {
+              knockbackDirection = Vector2(1, 0);
+            } else {
+              knockbackDirection = Vector2(-1, 0);
+            }
+            double knockbackStrength = 50;
+            player.position.add(knockbackDirection * knockbackStrength);
+            // player.takeDamage(20);        
+          }
+        });
+
 
         isAttacking = false;
         cooldownTimer = attackCooldown;
         current = EnemyState.idle;
+        Future.delayed(const Duration(milliseconds: 200), () {
+          remove(attackHitbox);
+        });
       });
+
     }
   }
 
@@ -133,12 +145,14 @@ abstract class Enemies extends SpriteAnimationGroupComponent
     // Lấy hitbox của người chơi
     final playerHitbox =
         player.children.whereType<RectangleHitbox>().firstOrNull;
-
+    if (attackHitbox == null) {
+      return false; // Return false if the hitbox is not initialized
+    }
     // Lấy hitbox của enemy từ phương thức getHitbox (do lớp con cung cấp)
-    final enemyHitbox = getHitbox();
+    final enemyHitbox = attackHitbox;
 
     // Kiểm tra nếu hitbox của người chơi tồn tại và nó giao nhau với hitbox của enemy
-    if (playerHitbox != null) {
+    if (playerHitbox != null && enemyHitbox != null) {
       return enemyHitbox.possiblyIntersects(playerHitbox);
     }
     return false;
@@ -191,6 +205,15 @@ abstract class Enemies extends SpriteAnimationGroupComponent
     if (hp <= 0) {
       die();
     }
+  }
+
+  addAttackHitbox() {
+      attackHitbox = RectangleHitbox(
+      position: Vector2(hitbox.offsetX, hitbox.offsetY),
+      size: Vector2(hitbox.width, hitbox.height),
+      // collisionType: CollisionType.passive,
+    );
+    add(attackHitbox);
   }
 
   void die() {

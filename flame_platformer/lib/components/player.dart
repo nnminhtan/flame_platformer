@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
+import 'package:flame_platformer/components/Enemies/Skeleton.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
@@ -70,6 +71,7 @@ class Player extends SpriteAnimationGroupComponent
   double hurtCooldown = 2.0; // 2-second cooldown
   double _cooldownTimer = 0.0; // Track remaining cooldown time
   bool gotHit = false;
+  bool isAttacked = false;
   // int _hitTime = 0;
 
   bool isOnGround = false;
@@ -113,6 +115,9 @@ class Player extends SpriteAnimationGroupComponent
     }
     if (_cooldownTimer > 0) {
       _cooldownTimer -= dt;
+    }
+    if(hp <= 0){
+      _respawn();
     }
 
     super.update(dt);
@@ -252,7 +257,8 @@ class Player extends SpriteAnimationGroupComponent
   //player collied with object
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (!reachedCheckpoint) {
+    
+    if(!reachedCheckpoint){
       if (other is Enemies && isAttacking) {
         other.takeDamage(20);
       }
@@ -261,38 +267,86 @@ class Player extends SpriteAnimationGroupComponent
         other.collidedwithPlayer();
       }
 
+      if (((other is Skeleton) && other.attackHitbox.isColliding) && 
+          (_cooldownTimer <= 0 && gotHit == false && isAttacked == false)) {
+        isAttacked = true;
+        // Future.delayed(const Duration(milliseconds: 1300), () {
+          takeDamage(20);
+          _cooldownTimer = hurtCooldown;
+        // });
+        Future.delayed(const Duration(milliseconds: 1000), () { 
+          isAttacked = false;
+        });
+      }
+      
+
       if ((other is Thorn || other is Spear) &&
           (_cooldownTimer <= 0 && gotHit == false)) {
         if (hp > 0) {
           takeDamage(10);
           _cooldownTimer = hurtCooldown;
         }
-
-        if (hp <= 0) {
-          _respawn();
-        }
-        // switch (_hitTime) {
-        //   case 0:
-        //   case 1:
-        //   case 2:
-        //     // Player collided with the thorn/spear, is not on cooldown, and hasn't reached the hit limit
-        //     _gotHurt(); // Call the hurt method
-        //     _cooldownTimer = hurtCooldown; // Reset the cooldown timer
-        //     break;
-        //   case 3:
-        //     // When the player hits the limit, respawn
-        //     _respawn(); // Call respawn method
-        //     _hitTime = 0; // Reset the hit counter
-        //     print(_hitTime); // Debug output
-        //     break;
-        //   default:
-        //     break;
-        // }
       }
-      if (other is Checkpoint) _reachedCheckpoint();
+      if(other is Checkpoint) _reachedCheckpoint();
     }
     super.onCollision(intersectionPoints, other);
   }
+
+  // void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+  //   if (!reachedCheckpoint) {
+  //     // Determine the type of the 'other' object
+  //     switch (other.runtimeType) {
+  //       // Case 1: Collision with Enemies
+  //       case Enemies:
+  //         if (isAttacking) {
+  //           (other as Enemies).takeDamage(20);
+  //         }
+  //         break;
+
+  //       // Case 2: Collision with an Item
+  //       case Item:
+  //         (other as Item).collidedwithPlayer();
+  //         break;
+
+  //       // Case 3: Collision with Skeleton's attack hitbox
+  //       case Skeleton:
+  //         if ((!(other as Skeleton).attackHitbox.isColliding) && 
+  //         (_cooldownTimer <= 0 && gotHit == false && isAttacked == false)) {
+  //             isAttacked = true;
+  //             // Future.delayed(const Duration(milliseconds: 1300), () {
+  //               // takeDamage(20);
+  //               _cooldownTimer = hurtCooldown;
+  //             // });
+  //             Future.delayed(const Duration(milliseconds: 1000), () { 
+  //               isAttacked = false;
+  //             });
+  //         }
+  //         break;
+        
+  //       // Case 4: Collision with Thorn or Spear
+  //       case Thorn:
+  //       case Spear:
+  //         if (_cooldownTimer <= 0 && gotHit == false) {
+  //           if (hp > 0) {
+  //             takeDamage(10);
+  //             _cooldownTimer = hurtCooldown;
+  //           }
+  //         }
+  //         break;
+
+  //       // Case 5: Collision with Checkpoint
+  //       case Checkpoint:
+  //         _reachedCheckpoint();
+  //         break;
+
+  //       // Default case: No specific action for other object types
+  //       default:
+  //         break;
+  //     }
+  //     if (other is Checkpoint) _reachedCheckpoint();
+  //   }
+  //   super.onCollision(intersectionPoints, other);
+  // }
 
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
