@@ -94,7 +94,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
                 offPos: offPos,
                 maxHp: 150);
             add(skeleton);
-            // add(EnemyHealthBar(skeleton));
+            add(EnemyHealthBar(skeleton));
             break;
           case 'Mushroom':
             final offNeg = spawnpoint.properties.getValue('offNeg');
@@ -120,6 +120,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               maxHp: 150,
             );
             add(flyingeye);
+            add(EnemyHealthBar(flyingeye));
             break;
 
           case 'Thorn':
@@ -136,7 +137,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(spear);
-          break;
+            break;
 
           case 'Checkpoint':
             final checkpoint = Checkpoint(
@@ -144,8 +145,8 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(checkpoint);
-          break;
-          
+            break;
+
           default:
         }
       }

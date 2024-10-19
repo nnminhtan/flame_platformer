@@ -47,7 +47,7 @@ abstract class Enemies extends SpriteAnimationGroupComponent
 
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
+    // debugMode = true;
     player = game.player;
     addAttackHitbox();
     remove(attackHitbox);
@@ -110,8 +110,9 @@ abstract class Enemies extends SpriteAnimationGroupComponent
       double attackAnimationDuration =
           (animations?[EnemyState.attack]?.frames.length ?? 0) * stepTime;
       Future.delayed(
-          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () async {
-        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công      
+          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()),
+          () async {
+        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công
         await addAttackHitbox();
 
         Future.delayed(const Duration(milliseconds: 50), () {
@@ -124,10 +125,9 @@ abstract class Enemies extends SpriteAnimationGroupComponent
             }
             double knockbackStrength = 50;
             player.position.add(knockbackDirection * knockbackStrength);
-            // player.takeDamage(20);        
+            // player.takeDamage(20);
           }
         });
-
 
         isAttacking = false;
         cooldownTimer = attackCooldown;
@@ -136,7 +136,6 @@ abstract class Enemies extends SpriteAnimationGroupComponent
           remove(attackHitbox);
         });
       });
-
     }
   }
 
@@ -208,7 +207,7 @@ abstract class Enemies extends SpriteAnimationGroupComponent
   }
 
   addAttackHitbox() {
-      attackHitbox = RectangleHitbox(
+    attackHitbox = RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),
       size: Vector2(hitbox.width, hitbox.height),
       // collisionType: CollisionType.passive,

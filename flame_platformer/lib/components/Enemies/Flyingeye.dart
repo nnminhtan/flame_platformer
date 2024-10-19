@@ -23,8 +23,6 @@ class Flyingeye extends Enemies {
 
   @override
   Future<void> onLoad() async {
-    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
-
     _loadAllAnimations();
     current = EnemyState.idle; // Đặt trạng thái ban đầu
 
@@ -34,6 +32,8 @@ class Flyingeye extends Enemies {
     );
 
     add(flyingeyeHitbox); // Thêm hitbox vào component
+
+    await super.onLoad(); // Đảm bảo gọi onLoad của lớp cha
   }
 
   // Ghi đè phương thức getHitbox để trả về skeletonHitbox

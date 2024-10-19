@@ -4,11 +4,26 @@ import 'package:flame_platformer/components/healthbar/health_bar.dart';
 import 'package:flutter/material.dart';
 
 class EnemyHealthBar extends HealthBar {
+  static Map<String, Map<String, Vector2>> healthBarOffsets = {
+    'Skeleton': {
+      'left': Vector2(-30, 100),
+      'right': Vector2(0, -10),
+    },
+    'Mushroom': {
+      'left': Vector2(-25, 65),
+      'right': Vector2(0, 0),
+    },
+    'Flyingeye': {
+      'left': Vector2(-25, 60),
+      'right': Vector2(0, 0),
+    },
+  };
+
   EnemyHealthBar(Enemies enemy)
       : super(
           entity: enemy,
-          barWidth: 30,
-          barHeight: 4,
+          barWidth: 25,
+          barHeight: 3,
           barColor: Colors.red,
         );
 
@@ -21,18 +36,15 @@ class EnemyHealthBar extends HealthBar {
   @override
   void setHealthBarPosition() {
     final hitbox = entity.getHitbox();
-    // final offset = Vector2(-40, -20);
+    final offsets = healthBarOffsets[entity.runtimeType.toString()];
     if (entity.scale.x < 0) {
-      // flipHorizontallyAroundCenter();
-      healthBar.position =
-          entity.position - hitbox.position + Vector2(-30, 100);
-      print('left');
+      healthBar.position = entity.position - hitbox.position + offsets!['left'];
+      // print('left');
     } else {
-      // flipHorizontallyAroundCenter();
-      healthBar.position = entity.position + hitbox.position + Vector2(0, -10);
-      print('right');
+      healthBar.position =
+          entity.position + hitbox.position + offsets!['right'];
+      // print('right');
     }
-    // healthBar.position = entity.position;
     // print('Enemy position: ${entity.position}');
     // print('Enemy hitbox position: ${hitbox.position}');
     // print('Health bar position: ${healthBar.position}');
