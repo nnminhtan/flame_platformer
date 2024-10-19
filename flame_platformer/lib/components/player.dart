@@ -62,7 +62,7 @@ class Player extends SpriteAnimationGroupComponent
   // for environment interaction
   List<CollisionBlock> collisionBlocks = [];
   final double _gravity = 9.8;
-  final double _jumpForce = 200; //460
+  final double _jumpForce = 250; //460
   final double _terminalVelocity = 300;
 
   //checkpoint
@@ -71,7 +71,8 @@ class Player extends SpriteAnimationGroupComponent
   double hurtCooldown = 2.0; // 2-second cooldown
   double _cooldownTimer = 0.0; // Track remaining cooldown time
   bool gotHit = false;
-  bool isAttacked = false;
+  bool isAttackCdPlayer = false;
+  bool isAttackCdEnemy = false;
   // int _hitTime = 0;
 
   bool isOnGround = false;
@@ -259,11 +260,11 @@ class Player extends SpriteAnimationGroupComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
     if(!reachedCheckpoint){
-      if (other is Enemies && isAttacking && isAttacked == false) {
-        isAttacked = true;
+      if (other is Enemies && isAttacking && isAttackCdPlayer == false) {
+        isAttackCdPlayer = true;
         other.takeDamage(20);
         Future.delayed(const Duration(milliseconds: 1000), () { 
-          isAttacked = false;
+          isAttackCdPlayer = false;
         });
       }
 
@@ -272,14 +273,14 @@ class Player extends SpriteAnimationGroupComponent
       }
 
       if (((other is Enemies) && other.attackHitbox.isColliding) && 
-          (_cooldownTimer <= 0 && gotHit == false && isAttacked == false)) {
-        isAttacked = true;
+          (_cooldownTimer <= 0 && gotHit == false && isAttackCdEnemy == false)) {
+        isAttackCdEnemy = true;
         // Future.delayed(const Duration(milliseconds: 1300), () {
           takeDamage(20);
           _cooldownTimer = hurtCooldown;
         // });
         Future.delayed(const Duration(milliseconds: 1000), () { 
-          isAttacked = false;
+          isAttackCdEnemy = false;
         });
       }
       
