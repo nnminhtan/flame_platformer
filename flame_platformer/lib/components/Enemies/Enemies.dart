@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_platformer/components/Enemies/Flyingeye.dart';
+import 'package:flame_platformer/components/Enemies/Mushroom.dart';
+import 'package:flame_platformer/components/Enemies/Skeleton.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 
 enum EnemyState { idle, run, attack }
+
 
 abstract class Enemies extends SpriteAnimationGroupComponent
     with HasGameRef<FlamePlatformer>, CollisionCallbacks {
@@ -15,9 +19,15 @@ abstract class Enemies extends SpriteAnimationGroupComponent
 
   double hp = 100.0;
   final double maxHp;
-
+  //hitbox for enemies
+  // Map<EnemyState, String> enemyHitboxMap = {
+  //   EnemyState.attack: 'skeletonAttack1',
+  // };
+  String enemyHitbox = '';
   late RectangleHitbox attackHitbox; // Store the hitbox to remove it later
-  var hitbox = CustomHitbox(offsetX: 60, offsetY: 60, width: 50, height: 50);
+  late var hitbox;
+  // = CustomHitbox.fromPreset(enemyHitbox);
+
 
   Enemies({
     super.position,
@@ -49,6 +59,11 @@ abstract class Enemies extends SpriteAnimationGroupComponent
   FutureOr<void> onLoad() {
     // debugMode = true;
     player = game.player;
+    if (enemyHitbox.isEmpty) {
+      // Initialize to a default value if it hasn’t been set
+      enemyHitbox = ''; // Optional: Set a reasonable default here
+    }
+    hitbox = CustomHitbox.fromPreset(enemyHitbox);
     addAttackHitbox();
     remove(attackHitbox);
     _calculateRange();
@@ -57,6 +72,7 @@ abstract class Enemies extends SpriteAnimationGroupComponent
 
   @override
   void update(double dt) {
+    hitbox = CustomHitbox.fromPreset(enemyHitbox);
     if (!gotStomped) {
       if (cooldownTimer > 0) {
         cooldownTimer -= dt;
@@ -66,7 +82,6 @@ abstract class Enemies extends SpriteAnimationGroupComponent
         _movement(dt);
       }
     }
-
     super.update(dt);
     checkAndAttackPlayer(player);
   }
@@ -101,18 +116,31 @@ abstract class Enemies extends SpriteAnimationGroupComponent
     }
   }
 
+  checkWhoIsAttacking(PositionComponent attacker, Player player) {
+  if (attacker is Skeleton) {
+    return 'skeletonAttack1';
+  } else if (attacker is Flyingeye) {
+    return 'flyingeyeAttack1';
+  } else if (attacker is Mushroom) {
+    return 'mushroomAttack1';
+  }
+}
+
+
   //Tấn công người chơi
   void attackPlayer(Player player) {
     if (!isAttacking) {
       isAttacking = true;
       current = EnemyState.attack;
+      // hitbox = CustomHitbox.fromPreset(enemyHitboxMap[current]!);
+      enemyHitbox = checkWhoIsAttacking(this, player);
 
       double attackAnimationDuration =
           (animations?[EnemyState.attack]?.frames.length ?? 0) * stepTime;
       Future.delayed(
-          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()),
-          () async {
-        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công
+          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () async {
+
+        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công      
         await addAttackHitbox();
 
         Future.delayed(const Duration(milliseconds: 50), () {

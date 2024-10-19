@@ -14,7 +14,7 @@ class Checkpoint extends SpriteAnimationComponent with HasGameRef<FlamePlatforme
   static const double stepTime = 0.2;
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
+    // debugMode = true;
 
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),

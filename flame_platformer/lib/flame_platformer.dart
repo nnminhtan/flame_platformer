@@ -20,15 +20,19 @@ class FlamePlatformer extends FlameGame
   late JoystickComponent joystick;
   bool isPaused = false;
   late HealthBar healthBar;
+  double zoomScale = 5.0;
 
   List<String> levelNames = ['forestmap', 'castlemap'];
   int currentLevelIndex = 0;
+  
 
   @override
   FutureOr<void> onLoad() async {
+    
     isPaused = true;
     // load images to cache
     await images.loadAllImages();
+    
     // _loadLevel();
     Future.delayed(const Duration(seconds: 1), () async {
       addJoystick();
@@ -37,6 +41,8 @@ class FlamePlatformer extends FlameGame
         player: player,
       )..priority = 0;
       await add(world);
+
+    
 
       // Get map dimensions
       final mapWidth = world.getMapWidth();
@@ -48,11 +54,21 @@ class FlamePlatformer extends FlameGame
           world: world, width: mapWidth, height: mapHeight)
         ..priority = 1;
       cam.viewfinder.anchor = Anchor.center;
-      cam.viewfinder.zoom = 4.0;
+      cam.viewfinder.zoom = zoomScale;
       await add(cam);
 
       healthBar = PlayerHealthBar(player)..priority = 5;
       await add(healthBar);
+
+      add(FpsTextComponent(
+        position: Vector2(40, 40), // Position in the top-left corner
+        textRenderer: TextPaint(
+          style: const TextStyle(
+            color: Color(0xFFFFFFFF), // White color for the FPS text
+            fontSize: 24,
+          ),
+        ),
+      ));
       // addAll([cam, world]);
       // children.sort((a, b) => a.priority.compareTo(b.priority));
       // TODO: implement onLoad
@@ -161,7 +177,7 @@ class FlamePlatformer extends FlameGame
           world: world, width: mapWidth, height: mapHeight)
         ..priority = 1;
       cam.viewfinder.anchor = Anchor.center;
-      cam.viewfinder.zoom = 4.0;
+      cam.viewfinder.zoom = zoomScale;
       await add(cam);
 
       healthBar = PlayerHealthBar(player)..priority = 5;

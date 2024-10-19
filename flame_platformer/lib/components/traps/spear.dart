@@ -7,12 +7,14 @@ import 'package:flame_platformer/flame_platformer.dart';
 
 class Spear extends SpriteAnimationComponent with HasGameRef<FlamePlatformer>{
   Spear({position, size}) : super(position: position, size: size,);
-  final hitbox = CustomHitbox(offsetX: 4, offsetY: 4, width: 24, height: 24);
+  final hitbox = CustomHitbox.fromPreset('Spear');
 
   static const double stepTime = 0.2;
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
+    // priority = -1;
+    // debugMode = true;
+    angle = 1.5708;
 
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),

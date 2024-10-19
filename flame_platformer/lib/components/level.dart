@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame_platformer/components/Enemies/Enemies.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame_platformer/components/Enemies/Flyingeye.dart';
 import 'package:flame_platformer/components/Enemies/Mushroom.dart';
@@ -13,6 +12,7 @@ import 'package:flame_platformer/components/healthbar/enemy_health_bar.dart';
 import 'package:flame_platformer/components/item.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/Enemies/Skeleton.dart';
+import 'package:flame_platformer/components/traps/saw.dart';
 import 'package:flame_platformer/components/traps/spear.dart';
 import 'package:flame_platformer/components/traps/thorn.dart';
 import 'package:flame_platformer/flame_platformer.dart';
@@ -71,11 +71,13 @@ class Level extends World with HasGameRef<FlamePlatformer> {
     if (spawnPointPlayer != null) {
       for (final spawnpoint in spawnPointPlayer.objects) {
         switch (spawnpoint.class_) {
+          //player
           case 'Player':
             player.position = Vector2(spawnpoint.x, spawnpoint.y);
             // player.anchor = Anchor.center;
             add(player);
             break;
+          //items
           case 'Item':
             final item = Item(
               item: spawnpoint.name,
@@ -84,6 +86,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(item);
             break;
+          //enemies
           case 'Skeleton':
             final offNeg = spawnpoint.properties.getValue('offNeg');
             final offPos = spawnpoint.properties.getValue('offPos');
@@ -122,7 +125,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             add(flyingeye);
             add(EnemyHealthBar(flyingeye));
             break;
-
+          //traps
           case 'Thorn':
             final thorn = Thorn(
               position: Vector2(spawnpoint.x, spawnpoint.y),
@@ -139,6 +142,21 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             add(spear);
             break;
 
+          case 'Saw':
+            final isVertical = spawnpoint.properties.getValue('isVertical');
+            final offNeg = spawnpoint.properties.getValue('offNeg'); //go left
+            final offPos = spawnpoint.properties.getValue('offPos'); //go right
+            final saw = Saw(
+              isVertical: isVertical,
+              offNeg: offNeg,
+              offPos: offPos,
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+            );
+            add(saw);
+          break;
+          
+          //checkpoint
           case 'Checkpoint':
             final checkpoint = Checkpoint(
               position: Vector2(spawnpoint.x, spawnpoint.y),
@@ -217,7 +235,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
   void _setCameraFollow() {
     gameRef.cam.follow(
       player, // Reference to your Player component
-      maxSpeed: 150, // Set a speed limit for camera movement
+      maxSpeed: 300, // Set a speed limit for camera movement
       horizontalOnly: false, // Whether to follow horizontally only
       verticalOnly: false, // Whether to follow vertically only
       snap:

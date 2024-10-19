@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
-import 'package:flame_platformer/components/Enemies/Skeleton.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
 import 'package:flame_platformer/components/item.dart';
+import 'package:flame_platformer/components/traps/saw.dart';
 import 'package:flame_platformer/components/traps/spear.dart';
 import 'package:flame_platformer/components/traps/thorn.dart';
 import 'package:flame_platformer/components/utils.dart';
@@ -62,7 +62,7 @@ class Player extends SpriteAnimationGroupComponent
   // for environment interaction
   List<CollisionBlock> collisionBlocks = [];
   final double _gravity = 9.8;
-  final double _jumpForce = 250; //460
+  final double _jumpForce = 200; //460
   final double _terminalVelocity = 300;
 
   //checkpoint
@@ -89,7 +89,7 @@ class Player extends SpriteAnimationGroupComponent
     startingPosition = Vector2(position.x, position.y);
 
     await _loadAllAnimations();
-    debugMode = true;
+    // debugMode = true;
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),
       size: Vector2(hitbox.width, hitbox.height),
@@ -259,15 +259,19 @@ class Player extends SpriteAnimationGroupComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
     if(!reachedCheckpoint){
-      if (other is Enemies && isAttacking) {
+      if (other is Enemies && isAttacking && isAttacked == false) {
+        isAttacked = true;
         other.takeDamage(20);
+        Future.delayed(const Duration(milliseconds: 1000), () { 
+          isAttacked = false;
+        });
       }
 
       if (other is Item) {
         other.collidedwithPlayer();
       }
 
-      if (((other is Skeleton) && other.attackHitbox.isColliding) && 
+      if (((other is Enemies) && other.attackHitbox.isColliding) && 
           (_cooldownTimer <= 0 && gotHit == false && isAttacked == false)) {
         isAttacked = true;
         // Future.delayed(const Duration(milliseconds: 1300), () {
@@ -280,7 +284,7 @@ class Player extends SpriteAnimationGroupComponent
       }
       
 
-      if ((other is Thorn || other is Spear) &&
+      if ((other is Thorn || other is Spear || other is Saw) &&
           (_cooldownTimer <= 0 && gotHit == false)) {
         if (hp > 0) {
           takeDamage(10);
@@ -373,6 +377,8 @@ class Player extends SpriteAnimationGroupComponent
     velocity.y += _gravity;
     velocity.y = velocity.y.clamp(-_jumpForce, _terminalVelocity);
     position.y += velocity.y * dt;
+    // print('jump: $_jumpForce, $_terminalVelocity, $_gravity, $velocity, $dt');
+
   }
 
   void _checkVerticalCollisions() {
@@ -440,7 +446,12 @@ class Player extends SpriteAnimationGroupComponent
 
     gotHit = true;
     current = PlayerState.hurt;
-    position.x = position.x - 15;
+    // position.x = position.x - 15;
+    if (scale.x > 0) {
+      position.x = position.x - 5;
+    } else if (scale.x < 0) {
+      position.x = position.x + 5;
+    }
     // position.y = position.y - 5;
     // _hitTime = _hitTime + 1;
     // print(_hitTime);

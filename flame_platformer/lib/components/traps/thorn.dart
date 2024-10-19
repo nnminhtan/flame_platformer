@@ -7,12 +7,13 @@ import 'package:flame_platformer/flame_platformer.dart';
 
 class Thorn extends SpriteAnimationComponent with HasGameRef<FlamePlatformer>{
   Thorn({position, size}) : super(position: position, size: size,);
-  final hitbox = CustomHitbox(offsetX: 4, offsetY: 4, width: 14, height: 10);
+  final hitbox = CustomHitbox.fromPreset('Thorn');
 
   static const double stepTime = 0.2;
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
+    // priority = -1;
+    // debugMode = true;
 
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),
