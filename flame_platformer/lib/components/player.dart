@@ -2,16 +2,21 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
+import 'package:flame_platformer/components/bgm_checkpoint.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
 import 'package:flame_platformer/components/item.dart';
+import 'package:flame_platformer/components/respawn_screen.dart';
 import 'package:flame_platformer/components/traps/saw.dart';
 import 'package:flame_platformer/components/traps/spear.dart';
 import 'package:flame_platformer/components/traps/thorn.dart';
 import 'package:flame_platformer/components/utils.dart';
 import 'package:flame_platformer/flame_platformer.dart';
+import 'package:flame_platformer/main.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 enum PlayerState {
@@ -100,13 +105,21 @@ class Player extends SpriteAnimationGroupComponent
     height: 30,
   );
 
+  //music
+  late String currentLevel;
+  late String bgmSpot;
+  bool inCave = false;
+  late String currentPlaying = 'Life and Legacy';
+
   @override
   FutureOr<void> onLoad() async {
     //set player spawnpoint
     startingPosition = Vector2(position.x, position.y);
 
     await _loadAllAnimations();
-    debugMode = true;
+    currentLevel = gameRef.levelNames[gameRef.currentLevelIndex];
+    changeBGM();
+    // debugMode = true;
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),
       size: Vector2(hitbox.width, hitbox.height),
@@ -116,6 +129,7 @@ class Player extends SpriteAnimationGroupComponent
 
   @override
   void update(double dt) {
+    print('0: $currentPlaying, $inCave');
     if (!gotHit && !reachedCheckpoint) {
       _updatePlayerState();
       if (isAttacking) {
@@ -136,11 +150,17 @@ class Player extends SpriteAnimationGroupComponent
       _checkHorizontalCollisions();
       _applyGravity(dt);
       _checkVerticalCollisions();
+    }else if(reachedCheckpoint){
+      Future.delayed(const Duration(seconds: 3), (){
+        currentLevel = gameRef.levelNames[gameRef.currentLevelIndex];
+        changeBGM();
+      });
     }
+    
     if (_cooldownTimer > 0) {
       _cooldownTimer -= dt;
     }
-    if (hp <= 0) {
+    if(hp <= 0 && gotHit == false){
       _respawn();
     }
 
@@ -467,7 +487,13 @@ class Player extends SpriteAnimationGroupComponent
           _cooldownTimer = hurtCooldown;
         }
       }
-      if (other is Checkpoint) _reachedCheckpoint();
+      if(other is Checkpoint) _reachedCheckpoint();
+
+      if(other is BgmCheckpoint) {
+        if(game.playSounds) {
+          forestBGM();
+        }
+      }
     }
     super.onCollision(intersectionPoints, other);
   }
@@ -585,18 +611,56 @@ class Player extends SpriteAnimationGroupComponent
   void _respawn() async {
     // const hitDuration = Duration(milliseconds: 100 * 10);
     // const canmoveDuration = Duration(milliseconds: 100 * 10);
-
     gotHit = true;
     current = PlayerState.die;
     await animationTicker?.completed;
     animationTicker?.reset();
-
-    scale.x = 1;
-    position = startingPosition;
-    hp = maxHp;
-    current = PlayerState.idle;
-    gotHit = false;
-    _updatePlayerState();
+    FlameAudio.bgm.pause();
+    // scale.x = 1;
+    // position = startingPosition;
+    // hp = maxHp;
+    // Future.delayed(canmoveDuration, () {
+    //     gotHit = false;
+    // });
+    
+    // current = PlayerState.idle;
+    
+    // _updatePlayerState();
+    // Push the respawn screen onto the navigator
+    await navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => RespawnScreen(
+          onContinue: () {
+            // Logic to continue the game
+            hp = maxHp; // Reset HP
+            scale.x = 1;
+            current = PlayerState.idle;
+            position = startingPosition; // Reset position
+            gotHit = false; 
+            print('1: $currentPlaying, $inCave');
+            inCave = true;
+            forestBGM();
+            print('2: $currentPlaying, $inCave');
+            // Remove the respawn screen and reset player state
+            navigatorKey.currentState?.pop(); // Go back to the game
+            // Reset hit state
+          },
+          onBackToMainMenu: () {
+            FlameAudio.bgm.stop();
+            // Logic to go back to the main menu
+            navigatorKey.currentState?.pop(); // Close respawn screen
+            Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MenuScreen(), // Ensure this is your main menu widget
+                  ),
+                  
+                );                 
+                FlameAudio.bgm.play('He is.mp3',volume: soundVolume);
+            // Implement main menu logic here
+          },
+        ),
+      ),
+    );
 
     // final dieAnimation = animationTickers![PlayerState.die]!;
     // dieAnimation.completed.whenComplete( () {
@@ -621,6 +685,9 @@ class Player extends SpriteAnimationGroupComponent
 
     gotHit = true;
     current = PlayerState.hurt;
+    if(game.playSounds) {
+      FlameAudio.play('OOF.mp3', volume: game.soundVolume);
+    }
     // position.x = position.x - 15;
     if (scale.x > 0) {
       position.x = position.x - 5;
@@ -675,5 +742,57 @@ class Player extends SpriteAnimationGroupComponent
       const waitToChangeDuration = Duration(seconds: 2);
       Future.delayed(waitToChangeDuration, () => game.loadNextLevel());
     });
+  }
+
+  void changeBGM() {
+    inCave = false;
+    switch (currentLevel) {
+      case 'forestmap':
+        if(game.playSounds) {
+          FlameAudio.bgm.stop();
+          FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume);
+        }
+        break;
+
+      case 'castlemap':
+        if(game.playSounds) {
+          FlameAudio.bgm.stop();
+          FlameAudio.bgm.play('Sis Puella Magica.mp3', volume: game.soundVolume);
+        }
+        break;
+      default:
+    }
+  }
+  void forestBGM() {
+    switch (inCave) {
+      case false:
+        if(currentPlaying == 'Things That Scheme in the Dark'){
+            FlameAudio.bgm.resume();
+            inCave = true;
+        }else{
+          FlameAudio.bgm.stop();
+          FlameAudio.bgm.play('Things That Scheme in the Dark.mp3', volume: game.soundVolume);
+          Future.delayed(const Duration(seconds: 3), () { 
+            inCave = true;
+            currentPlaying = 'Things That Scheme in the Dark';
+          });
+        }
+        break;
+
+      case true:
+        if(currentPlaying == 'Life and Legacy'){
+          FlameAudio.bgm.resume();
+          inCave = false;
+        }else{
+          FlameAudio.bgm.stop();
+          FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume);
+          Future.delayed(const Duration(seconds: 3), () { 
+            inCave = false;
+            currentPlaying = 'Life and Legacy';
+          });
+        }
+        break;
+      default:
+    }
   }
 }

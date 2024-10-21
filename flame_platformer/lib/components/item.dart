@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 
@@ -35,7 +36,9 @@ class Item extends SpriteAnimationComponent with HasGameRef<FlamePlatformer>, Co
   
   void collidedwithPlayer() {
     if(!_collected){
-
+      if(game.playSounds) {
+        FlameAudio.play('Pick item.mp3', volume: game.soundVolume);
+      }
       animation = SpriteAnimation.fromFrameData(game.images.fromCache('Trap and Weapon/Collected.png'), 
       SpriteAnimationData.sequenced(amount: 6, stepTime: 0.05, textureSize: Vector2.all(32), loop: false));
       _collected = true;

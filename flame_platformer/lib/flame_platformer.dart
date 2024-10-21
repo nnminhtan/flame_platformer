@@ -15,10 +15,21 @@ import 'package:flutter/painting.dart';
 
 class FlamePlatformer extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks, HasCollisionDetection {
+
+  bool playSounds;
+  double soundVolume;
+
+  FlamePlatformer({
+    this.playSounds = true,  // Optional, default to true
+    this.soundVolume = 1.0,  // Optional, default to 1.0
+  });
+
   late CameraComponent cam;
   Player player = Player();
   late JoystickComponent joystick;
   bool isPaused = false;
+  //sound
+
   late HealthBar healthBar;
   double zoomScale = 5.0;
 
@@ -32,6 +43,8 @@ class FlamePlatformer extends FlameGame
     isPaused = true;
     // load images to cache
     await images.loadAllImages();
+
+    print('Sound volume: $soundVolume, Sound is on: $playSounds');
     
     // _loadLevel();
     Future.delayed(const Duration(seconds: 1), () async {

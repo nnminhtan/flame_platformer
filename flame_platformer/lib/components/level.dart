@@ -6,6 +6,7 @@ import 'package:flame/experimental.dart';
 import 'package:flame_platformer/components/Enemies/Flyingeye.dart';
 import 'package:flame_platformer/components/Enemies/Mushroom.dart';
 import 'package:flame_platformer/components/background_tile.dart';
+import 'package:flame_platformer/components/bgm_checkpoint.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/healthbar/enemy_health_bar.dart';
@@ -34,7 +35,6 @@ class Level extends World with HasGameRef<FlamePlatformer> {
     _addBackground();
     _spawnObject();
     _addCollision();
-
     // TODO: implement onLoad
     return super.onLoad();
   }
@@ -155,7 +155,15 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(saw);
           break;
-          
+
+          case 'BGM_Checkpoint':
+            final bgmCheckpoint = BgmCheckpoint(
+              spot: spawnpoint.name,
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+            );
+            add(bgmCheckpoint);
+          break;
           //checkpoint
           case 'Checkpoint':
             final checkpoint = Checkpoint(
@@ -242,4 +250,5 @@ class Level extends World with HasGameRef<FlamePlatformer> {
           true, // If true, the camera snaps to the player instead of moving smoothly
     );
   }
+  
 }

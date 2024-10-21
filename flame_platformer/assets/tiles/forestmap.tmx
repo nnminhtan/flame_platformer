@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="159" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="155">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="159" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="169">
  <tileset firstgid="1" source="env_ground.tsx"/>
  <tileset firstgid="901" source="env_trees.tsx"/>
  <tileset firstgid="2057" source="castle_env.tsx"/>
@@ -695,7 +695,7 @@
   <object id="142" type="Thorn" x="496" y="896" width="16" height="32"/>
   <object id="143" type="Thorn" x="944" y="928" width="16" height="32"/>
   <object id="144" type="Thorn" x="144" y="720" width="16" height="32"/>
-  <object id="146" name="Skeleton" type="Skeleton" x="609" y="352.114" width="110.25" height="111.136">
+  <object id="146" name="Skeleton" type="Skeleton" x="1680" y="800" width="110.25" height="111.136">
    <properties>
     <property name="offNeg" type="float" value="5"/>
     <property name="offPos" type="float" value="6"/>
@@ -726,6 +726,9 @@
     <property name="offPos" type="float" value="3"/>
    </properties>
   </object>
+  <object id="165" name="Cave" type="BGM_Checkpoint" x="1200" y="528" width="224" height="32"/>
+  <object id="166" name="Cave" type="BGM_Checkpoint" x="736" y="528" width="224" height="32"/>
+  <object id="167" name="Cave" type="BGM_Checkpoint" x="-96" y="544" width="224" height="32"/>
  </objectgroup>
  <objectgroup id="11" name="Collisions">
   <object id="25" x="960" y="464" width="80" height="80"/>
