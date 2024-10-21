@@ -71,6 +71,11 @@ flutter:
     - assets/images/Main Character/Fall/
     - assets/images/Main Character/Normal_Attack/
     - assets/images/Main Character/Up_Attack/
+    - assets/images/Main Character/Air_Attack/
+    - assets/images/Main Character/Plunge_Attack/Loop/
+    - assets/images/Main Character/Plunge_Attack/End/
+    - assets/images/Main Character/Slide/
+    - assets/images/Main Character/Crouch/
     - assets/images/Main Character/Die/
     - assets/images/Main Character/Hurt/
     - assets/images/HUD/

@@ -21,6 +21,11 @@ enum PlayerState {
   fall,
   normalAttack,
   upAttack,
+  airAttack,
+  plungeAttack,
+  plungeAttackEnd,
+  crouch,
+  slide,
   hurt,
   die,
 }
@@ -39,6 +44,12 @@ class Player extends SpriteAnimationGroupComponent
   final double attackDuration = 0.75;
   bool isAttacking = false;
   bool isUpAttack = false;
+  bool isAirAttack = false;
+  bool isPlungeAttack = false;
+  bool isSliding = false;
+  bool isCrouching = false;
+  RectangleHitbox? attackHitbox;
+  CustomHitbox? currentAttackHitbox;
 
   //spawn point default
   Vector2 startingPosition = Vector2.zero();
@@ -51,6 +62,11 @@ class Player extends SpriteAnimationGroupComponent
   late final SpriteAnimation fallAnimation;
   late final SpriteAnimation normalAttackAnimation;
   late final SpriteAnimation upAttackAnimation;
+  late final SpriteAnimation airAttackAnimation;
+  late final SpriteAnimation plungeAttackAnimation;
+  late final SpriteAnimation plungeAttackEndAnimation;
+  late final SpriteAnimation crouchAnimation;
+  late final SpriteAnimation slideAnimation;
   late final SpriteAnimation hurtAnimation;
   late final SpriteAnimation dieAnimation;
 
@@ -90,7 +106,7 @@ class Player extends SpriteAnimationGroupComponent
     startingPosition = Vector2(position.x, position.y);
 
     await _loadAllAnimations();
-    // debugMode = true;
+    debugMode = true;
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),
       size: Vector2(hitbox.width, hitbox.height),
@@ -102,14 +118,21 @@ class Player extends SpriteAnimationGroupComponent
   void update(double dt) {
     if (!gotHit && !reachedCheckpoint) {
       _updatePlayerState();
-      _updatePlayerMovement(dt);
+      if (isAttacking) {
+        _updateAttackHitbox();
+      }
       // will add logic to fix attack movement is seperated
       if (attackTimer > 0) {
         attackTimer -= dt;
-        if (attackTimer <= 0) {
+        if (attackTimer <= 0 && !isPlungeAttack) {
           isAttacking = false;
+          isUpAttack = false;
+          isAirAttack = false;
+          // isPlungeAttack = false;
+          // isSliding = false;
         }
       }
+      _updatePlayerMovement(dt);
       _checkHorizontalCollisions();
       _applyGravity(dt);
       _checkVerticalCollisions();
@@ -117,7 +140,7 @@ class Player extends SpriteAnimationGroupComponent
     if (_cooldownTimer > 0) {
       _cooldownTimer -= dt;
     }
-    if(hp <= 0){
+    if (hp <= 0) {
       _respawn();
     }
 
@@ -133,19 +156,65 @@ class Player extends SpriteAnimationGroupComponent
         keysPressed.contains(LogicalKeyboardKey.arrowLeft);
     final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
         keysPressed.contains(LogicalKeyboardKey.arrowRight);
-    // final isUpKeyPressed = keysPressed.contains(LogicalKeyboardKey.arrowUp) ||
-    //     keysPressed.contains(LogicalKeyboardKey.keyW);
+    final isUpKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyW) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowUp);
+    final isDownKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyS) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowDown);
     final isAttackKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyJ);
+    final isCrouchKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyG);
+    final isSlideKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyH);
 
-    horizontalMovement += isLeftKeyPressed ? -1 : 0;
-    horizontalMovement += isRightKeyPressed ? 1 : 0;
+    // make sure cant move while normal attack
+    if (!isAttacking || isAirAttack) {
+      horizontalMovement += isLeftKeyPressed ? -1 : 0;
+      horizontalMovement += isRightKeyPressed ? 1 : 0;
+    }
 
     hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
+
+    if (isCrouchKeyPressed && isOnGround && !isAttacking && !isSliding) {
+      isCrouching = true;
+    } else {
+      isCrouching = false;
+    }
+
+    if (isSlideKeyPressed && isOnGround && !isAttacking && !isSliding) {
+      isSliding = true;
+      // reset the slide after a duration
+      Future.delayed(Duration(milliseconds: 700), () {
+        isSliding = false; // Slide duration
+      });
+    }
 
     // still got error with up attack so add more later
     if (isAttackKeyPressed && !isAttacking) {
       isAttacking = true;
       attackTimer = attackDuration;
+      // check plunge
+      if ((current == PlayerState.jump || current == PlayerState.fall) &&
+          isDownKeyPressed) {
+        isPlungeAttack = true;
+        isAirAttack = false;
+        isUpAttack = false;
+      }
+      // check air
+      else if ((current == PlayerState.jump || current == PlayerState.fall) &&
+          (isLeftKeyPressed || isRightKeyPressed)) {
+        isAirAttack = true;
+        isPlungeAttack = false;
+        isUpAttack = false;
+      }
+      // check up
+      else if (isUpKeyPressed || !isOnGround) {
+        isUpAttack = true;
+        isAirAttack = false;
+        isPlungeAttack = false;
+      } else {
+        // else normal
+        isUpAttack = false;
+        isAirAttack = false;
+        isPlungeAttack = false;
+      }
     }
 
     return super.onKeyEvent(event, keysPressed);
@@ -160,6 +229,15 @@ class Player extends SpriteAnimationGroupComponent
     normalAttackAnimation =
         await _loadAnimation('Main Character/Normal_Attack', 6);
     upAttackAnimation = await _loadAnimation('Main Character/Up_Attack', 5);
+    airAttackAnimation = await _loadAnimation('Main Character/Air_Attack', 4)
+      ..loop = false;
+    plungeAttackAnimation =
+        await _loadAnimation('Main Character/Plunge_Attack/Loop', 2)
+          ..loop = true;
+    plungeAttackEndAnimation =
+        await _loadAnimation('Main Character/Plunge_Attack/End', 3);
+    crouchAnimation = await _loadAnimation('Main Character/Crouch', 4);
+    slideAnimation = await _loadAnimation('Main Character/Slide', 5);
     hurtAnimation = await _loadAnimation('Main Character/Hurt', 6);
     dieAnimation = await _loadAnimation('Main Character/Die', 10)
       ..loop = false;
@@ -171,6 +249,11 @@ class Player extends SpriteAnimationGroupComponent
       PlayerState.fall: fallAnimation,
       PlayerState.normalAttack: normalAttackAnimation,
       PlayerState.upAttack: upAttackAnimation,
+      PlayerState.airAttack: airAttackAnimation,
+      PlayerState.plungeAttack: plungeAttackAnimation,
+      PlayerState.plungeAttackEnd: plungeAttackEndAnimation,
+      PlayerState.crouch: crouchAnimation,
+      PlayerState.slide: slideAnimation,
       PlayerState.hurt: hurtAnimation,
       PlayerState.die: dieAnimation,
     };
@@ -194,31 +277,49 @@ class Player extends SpriteAnimationGroupComponent
 
   void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
-
     // check flip animation first
     if (velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
     } else if (velocity.x > 0 && scale.x < 0) {
       flipHorizontallyAroundCenter();
     }
-
     // check logic attack
     if (isAttacking) {
-      playerState = PlayerState.normalAttack;
+      if (isPlungeAttack) {
+        if (isOnGround) {
+          playerState = PlayerState.plungeAttackEnd;
+          isPlungeAttack = false;
+          isAttacking = false;
+        } else {
+          playerState = PlayerState.plungeAttack;
+        }
+      } else if (isAirAttack) {
+        playerState = PlayerState.airAttack;
+      } else if (isUpAttack) {
+        playerState = PlayerState.upAttack;
+      } else {
+        playerState = PlayerState.normalAttack;
+      }
     } else {
       // check if running, set run
       if (velocity.x > 0 || velocity.x < 0) {
         playerState = PlayerState.run;
       }
-
       // check if falling, set fall
       if (velocity.y > 0 && !gotHit) {
         playerState = PlayerState.fall;
       }
-
       // check if jumping, set jump
       if (velocity.y < 0) {
         playerState = PlayerState.jump;
+      }
+      // Check for sliding
+      if (isSliding) {
+        playerState = PlayerState.slide;
+      }
+      // check for crouching
+      if (isCrouching) {
+        playerState = PlayerState.crouch;
       }
     }
 
@@ -235,7 +336,15 @@ class Player extends SpriteAnimationGroupComponent
     //   isOnGround = false;
     // }
 
-    velocity.x = horizontalMovement * moveSpeed;
+    // if slide, a bit faster
+    if (isSliding) {
+      velocity.x = (scale.x > 0 ? 1 : -1) * moveSpeed * 1.5;
+    } else if (isCrouching) {
+      // could make it move while crouch but no animtion for that
+      velocity.x = 0;
+    } else {
+      velocity.x = horizontalMovement * moveSpeed;
+    }
     position.x += velocity.x * dt;
   }
 
@@ -244,6 +353,59 @@ class Player extends SpriteAnimationGroupComponent
     position.y += velocity.y * dt;
     isOnGround = false;
     hasJumped = false;
+  }
+
+  void _updateAttackHitbox() {
+    String attackType;
+    if (isAttacking) {
+      switch (current) {
+        case PlayerState.normalAttack:
+          attackType = 'playerNormalAttack';
+          break;
+        case PlayerState.upAttack:
+          attackType = 'playerUpAttack';
+          break;
+        case PlayerState.airAttack:
+          attackType = 'playerAirAttack';
+          break;
+        case PlayerState.plungeAttack:
+          attackType = 'playerPlungeAttack';
+          break;
+        default:
+          attackType = 'playerNormalAttack';
+          break;
+      }
+
+      currentAttackHitbox = CustomHitbox.fromPreset(attackType);
+
+      // print('playerState: $current, attackType: $attackType');
+      // print('Attack Hitbox: offsetX: ${currentAttackHitbox!.offsetX}, '
+      //     'offsetY: ${currentAttackHitbox!.offsetY}, '
+      //     'width: ${currentAttackHitbox!.width}, '
+      //     'height: ${currentAttackHitbox!.height}');
+
+      if (attackHitbox == null || attackHitbox!.parent == null) {
+        attackHitbox = RectangleHitbox(
+          position: Vector2(
+              currentAttackHitbox!.offsetX, currentAttackHitbox!.offsetY),
+          size:
+              Vector2(currentAttackHitbox!.width, currentAttackHitbox!.height),
+        );
+      }
+
+      // print("Adding attack hitbox: ${attackHitbox.toString()}");
+      add(attackHitbox!);
+
+      Future.delayed(const Duration(milliseconds: 750), () {
+        if (attackHitbox != null && attackHitbox!.parent != null) {
+          // print("Removing attack hitbox: ${attackHitbox.toString()}");
+          remove(attackHitbox!);
+          attackHitbox = null;
+        } else {
+          // print("AttackHitbox has no parent, skipping removal");
+        }
+      });
+    }
   }
 
   void attack() {
@@ -258,32 +420,45 @@ class Player extends SpriteAnimationGroupComponent
   //player collied with object
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    
-    if(!reachedCheckpoint){
-      if (other is Enemies && isAttacking && isAttackCdPlayer == false) {
-        isAttackCdPlayer = true;
-        other.takeDamage(20);
-        Future.delayed(const Duration(milliseconds: 1000), () { 
-          isAttackCdPlayer = false;
-        });
+    if (!reachedCheckpoint) {
+      // if (other is Enemies && isAttacking && isAttackCdPlayer == false) {
+      //   isAttackCdPlayer = true;
+      //   other.takeDamage(20);
+      //   Future.delayed(const Duration(milliseconds: 1000), () {
+      //     isAttackCdPlayer = false;
+      //   });
+      // }
+
+      // Collision with Player's Attack Hitbox
+      if (attackHitbox != null &&
+          other is Enemies &&
+          attackHitbox!.isColliding) {
+        if (isAttacking && !isAttackCdPlayer) {
+          isAttackCdPlayer = true;
+          other.takeDamage(20);
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            isAttackCdPlayer = false;
+          });
+        }
       }
 
       if (other is Item) {
         other.collidedwithPlayer();
       }
 
-      if (((other is Enemies) && other.attackHitbox.isColliding) && 
-          (_cooldownTimer <= 0 && gotHit == false && isAttackCdEnemy == false)) {
+      if (((other is Enemies) && other.attackHitbox.isColliding) &&
+          (_cooldownTimer <= 0 &&
+              gotHit == false &&
+              isAttackCdEnemy == false)) {
         isAttackCdEnemy = true;
         // Future.delayed(const Duration(milliseconds: 1300), () {
-          takeDamage(20);
-          _cooldownTimer = hurtCooldown;
+        takeDamage(20);
+        _cooldownTimer = hurtCooldown;
         // });
-        Future.delayed(const Duration(milliseconds: 1000), () { 
+        Future.delayed(const Duration(milliseconds: 1000), () {
           isAttackCdEnemy = false;
         });
       }
-      
 
       if ((other is Thorn || other is Spear || other is Saw) &&
           (_cooldownTimer <= 0 && gotHit == false)) {
@@ -292,7 +467,7 @@ class Player extends SpriteAnimationGroupComponent
           _cooldownTimer = hurtCooldown;
         }
       }
-      if(other is Checkpoint) _reachedCheckpoint();
+      if (other is Checkpoint) _reachedCheckpoint();
     }
     super.onCollision(intersectionPoints, other);
   }
@@ -315,19 +490,19 @@ class Player extends SpriteAnimationGroupComponent
 
   //       // Case 3: Collision with Skeleton's attack hitbox
   //       case Skeleton:
-  //         if ((!(other as Skeleton).attackHitbox.isColliding) && 
+  //         if ((!(other as Skeleton).attackHitbox.isColliding) &&
   //         (_cooldownTimer <= 0 && gotHit == false && isAttacked == false)) {
   //             isAttacked = true;
   //             // Future.delayed(const Duration(milliseconds: 1300), () {
   //               // takeDamage(20);
   //               _cooldownTimer = hurtCooldown;
   //             // });
-  //             Future.delayed(const Duration(milliseconds: 1000), () { 
+  //             Future.delayed(const Duration(milliseconds: 1000), () {
   //               isAttacked = false;
   //             });
   //         }
   //         break;
-        
+
   //       // Case 4: Collision with Thorn or Spear
   //       case Thorn:
   //       case Spear:
@@ -379,7 +554,6 @@ class Player extends SpriteAnimationGroupComponent
     velocity.y = velocity.y.clamp(-_jumpForce, _terminalVelocity);
     position.y += velocity.y * dt;
     // print('jump: $_jumpForce, $_terminalVelocity, $_gravity, $velocity, $dt');
-
   }
 
   void _checkVerticalCollisions() {

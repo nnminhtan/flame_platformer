@@ -24,6 +24,14 @@ class CustomHitbox {
         return CustomHitbox(offsetX: 40, offsetY: 30, width: 20, height: 30);
       case 'mushroomAttack1':
         return CustomHitbox(offsetX: 38, offsetY: 33, width: 20, height: 30);
+      case 'playerNormalAttack':
+        return CustomHitbox(offsetX: 25, offsetY: 4, width: 21, height: 30);
+      case 'playerUpAttack':
+        return CustomHitbox(offsetX: 25, offsetY: 2, width: 21, height: 30);
+      case 'playerAirAttack':
+        return CustomHitbox(offsetX: 25, offsetY: 5, width: 21, height: 30);
+      case 'playerPlungeAttack':
+        return CustomHitbox(offsetX: 14, offsetY: 4, width: 21, height: 30);
       case '':
       default:
         // Default hitbox if object name is not recognized
