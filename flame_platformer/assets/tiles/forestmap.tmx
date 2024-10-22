@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< Updated upstream
 <map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="120" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="3">
+=======
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="159" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="155">
+>>>>>>> Stashed changes
  <tileset firstgid="1" source="env_ground.tsx"/>
  <tileset firstgid="901" source="env_trees.tsx"/>
  <layer id="7" name="base_cave" width="120" height="64">
@@ -343,6 +347,113 @@
 </data>
  </layer>
  <objectgroup id="8" name="Spawnpoints">
+<<<<<<< Updated upstream
   <object id="1" name="Player" type="Player" x="338.667" y="417.334" width="50" height="53.3333"/>
+=======
+  <object id="140" type="Spear" x="304" y="832" width="32" height="80"/>
+  <object id="142" type="Thorn" x="496" y="896" width="16" height="32"/>
+  <object id="143" type="Thorn" x="944" y="928" width="16" height="32"/>
+  <object id="144" type="Thorn" x="144" y="720" width="16" height="32"/>
+  <object id="146" name="Skeleton" type="Skeleton" x="605.83" y="350.781" width="110.25" height="111.136">
+   <properties>
+    <property name="offNeg" type="float" value="5"/>
+    <property name="offPos" type="float" value="6"/>
+   </properties>
+  </object>
+  <object id="147" name="Mushroom" type="Mushroom" x="1088.08" y="399.098" width="74" height="63.6364">
+   <properties>
+    <property name="offNeg" type="float" value="10"/>
+    <property name="offPos" type="float" value="5.5"/>
+   </properties>
+  </object>
+  <object id="148" name="Flying eye" type="Flying eye" x="1203.79" y="878.606" width="74" height="63.6364">
+   <properties>
+    <property name="offNeg" type="float" value="17"/>
+    <property name="offPos" type="float" value="13"/>
+   </properties>
+  </object>
+  <object id="146" name="Coin" type="Item" x="496" y="368" width="32" height="32"/>
+  <object id="148" type="Thorn" x="336" y="448" width="16" height="32"/>
+  <object id="149" type="Thorn" x="368" y="448" width="16" height="32"/>
+  <object id="150" type="Spear" x="208" y="432" width="32" height="80"/>
+  <object id="152" type="Checkpoint" x="2464" y="448" width="64" height="64"/>
+  <object id="153" name="Player" type="Player" x="272" y="416" width="44" height="46"/>
+  <object id="154" name="Boss" type="Boss" x="1902.27" y="399.424" width="76.167" height="109.833">
+   <properties>
+    <property name="offNeg" type="float" value="22"/>
+    <property name="offPos" type="float" value="10"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="11" name="Collisions">
+  <object id="25" x="960" y="464" width="80" height="80"/>
+  <object id="27" x="1216" y="416" width="64" height="48"/>
+  <object id="35" x="2544" y="192" width="16" height="320"/>
+  <object id="36" x="2544" y="512" width="16" height="208"/>
+  <object id="44" x="464" y="400" width="96" height="64"/>
+  <object id="45" x="400" y="448" width="32" height="32"/>
+  <object id="48" x="128" y="384" width="48" height="16"/>
+  <object id="59" x="832" y="464" width="32" height="16"/>
+  <object id="63" x="480" y="464" width="256" height="224"/>
+  <object id="64" x="560" y="688" width="112" height="48"/>
+  <object id="65" x="672" y="688" width="48" height="32"/>
+  <object id="66" x="496" y="688" width="64" height="32"/>
+  <object id="68" x="256" y="544" width="224" height="80"/>
+  <object id="70" x="384" y="624" width="96" height="32"/>
+  <object id="71" x="416" y="656" width="64" height="16"/>
+  <object id="72" x="448" y="672" width="32" height="16"/>
+  <object id="73" x="256" y="624" width="128" height="16"/>
+  <object id="74" x="208" y="608" width="48" height="16"/>
+  <object id="75" x="112" y="544" width="144" height="16"/>
+  <object id="76" x="128" y="560" width="128" height="16"/>
+  <object id="77" x="144" y="576" width="112" height="16"/>
+  <object id="78" x="176" y="592" width="80" height="16"/>
+  <object id="79" x="112" y="480" width="288" height="64"/>
+  <object id="82" x="128" y="400" width="48" height="80"/>
+  <object id="83" type="Platform" x="64" y="384" width="64" height="16"/>
+  <object id="84" x="96" y="400" width="32" height="32"/>
+  <object id="85" x="176" y="464" width="224" height="16"/>
+  <object id="86" x="432" y="464" width="48" height="16"/>
+  <object id="87" x="400" y="480" width="80" height="64"/>
+  <object id="89" x="0" y="384" width="16" height="352"/>
+  <object id="90" type="Platform" x="16" y="576" width="48" height="16"/>
+  <object id="91" x="16" y="592" width="32" height="16"/>
+  <object id="92" x="16" y="608" width="32" height="16"/>
+  <object id="93" x="0" y="736" width="224" height="112"/>
+  <object id="95" x="160" y="864" width="224" height="80"/>
+  <object id="96" x="160" y="848" width="64" height="16"/>
+  <object id="98" x="384" y="912" width="560" height="64"/>
+  <object id="99" x="784" y="880" width="144" height="32"/>
+  <object id="100" x="928" y="896" width="16" height="16"/>
+  <object id="101" x="816" y="864" width="96" height="16"/>
+  <object id="103" x="944" y="944" width="1184" height="80"/>
+  <object id="104" x="1936" y="592" width="192" height="352"/>
+  <object id="105" x="1456" y="912" width="480" height="32"/>
+  <object id="106" x="960" y="544" width="64" height="176"/>
+  <object id="107" x="1024" y="544" width="48" height="160"/>
+  <object id="108" x="1072" y="544" width="128" height="144"/>
+  <object id="109" x="1200" y="544" width="80" height="192"/>
+  <object id="110" x="1040" y="464" width="240" height="80"/>
+  <object id="111" x="1360" y="512" width="1184" height="80"/>
+  <object id="113" x="1360" y="416" width="128" height="96"/>
+  <object id="114" x="1488" y="464" width="16" height="48"/>
+  <object id="115" x="1344" y="416" width="16" height="64"/>
+  <object id="116" x="1360" y="592" width="48" height="16"/>
+  <object id="117" x="1408" y="592" width="96" height="96"/>
+  <object id="118" x="1504" y="592" width="432" height="128"/>
+  <object id="119" x="1808" y="720" width="128" height="16"/>
+  <object id="120" x="1840" y="736" width="96" height="16"/>
+  <object id="121" x="1872" y="752" width="64" height="16"/>
+  <object id="122" x="1904" y="768" width="32" height="16"/>
+  <object id="125" x="0" y="176" width="16" height="208"/>
+  <object id="127" x="16" y="640" width="96" height="16"/>
+  <object id="129" x="16" y="656" width="112" height="80"/>
+  <object id="130" x="128" y="704" width="16" height="32"/>
+  <object id="133" type="Platform" x="16" y="448" width="32" height="16"/>
+  <object id="134" type="Platform" x="224" y="768" width="32" height="16"/>
+  <object id="135" type="Platform" x="224" y="816" width="32" height="16"/>
+  <object id="137" type="Platform" x="16" y="512" width="32" height="16"/>
+  <object id="139" x="112" y="432" width="16" height="48"/>
+>>>>>>> Stashed changes
  </objectgroup>
 </map>
