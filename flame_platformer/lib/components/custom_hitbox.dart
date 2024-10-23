@@ -19,8 +19,13 @@ class CustomHitbox {
         return CustomHitbox(offsetX: 4, offsetY: 4, width: 14, height: 10);
       case 'Spear':
         return CustomHitbox(offsetX: 4, offsetY: 4, width: 24, height: 24);
+      case 'Bonfire':
+        return CustomHitbox(offsetX: 4, offsetY: 4, width: 24, height: 24);
       case 'Bgm_Loader':
-        return CustomHitbox(offsetX: 1, offsetY: 1, width: 224, height: 32);
+        return CustomHitbox(offsetX: 1, offsetY: 1, 
+        width: 2064, //224
+        height: 464, //32
+        );
       // Add more cases for different objects
       case 'flyingeyeAttack1':
         return CustomHitbox(offsetX: 40, offsetY: 30, width: 20, height: 30);

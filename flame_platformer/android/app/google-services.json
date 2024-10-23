@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1090212787991",
+    "project_id": "platformer-game-fe9ef",
+    "storage_bucket": "platformer-game-fe9ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090212787991:android:d82fab6ed2b5c818bb6952",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1ODnu6J_oPFXZrpd1QHjnwmvsFWUKLHE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

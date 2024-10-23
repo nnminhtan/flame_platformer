@@ -5,9 +5,13 @@ import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
 import 'package:flame_platformer/components/bgm_checkpoint.dart';
+import 'package:flame_platformer/components/bonfire.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
+import 'package:flame_platformer/components/game%20data/gamedata.dart';
+import 'package:flame_platformer/components/game%20data/playerdata.dart';
+import 'package:flame_platformer/components/game%20data/settingdata.dart';
 import 'package:flame_platformer/components/item.dart';
 import 'package:flame_platformer/components/respawn_screen.dart';
 import 'package:flame_platformer/components/traps/saw.dart';
@@ -41,7 +45,7 @@ class Player extends SpriteAnimationGroupComponent
   //default PlayerState
   PlayerState playerState = PlayerState.idle;
   // hp
-  double hp = 100.0;
+  late double hp; 
   final double maxHp = 100.0;
 
   // for attack logic
@@ -108,17 +112,29 @@ class Player extends SpriteAnimationGroupComponent
   //music
   late String currentLevel;
   late String bgmSpot;
-  bool inCave = false;
+  late bool inCave;
+  bool inCaveCheck = false;
   late String currentPlaying = 'Life and Legacy';
+
+  //save game
+  bool isnearBonfire = false;
+  late String currentBonfire;
 
   @override
   FutureOr<void> onLoad() async {
-    //set player spawnpoint
-    startingPosition = Vector2(position.x, position.y);
-
-    await _loadAllAnimations();
+    hp = game.hp;
+    inCave = game.inCave;
     currentLevel = gameRef.levelNames[gameRef.currentLevelIndex];
-    changeBGM();
+    //set player spawnpoint
+    if(game.isloadfromsavefile){
+      startingPosition = Vector2(game.x, game.y);
+      changeBGM();
+      game.isloadfromsavefile = false;
+    }else{
+      startingPosition = Vector2(position.x, position.y);
+    }
+    currentBonfire = game.bonfireName;
+    await _loadAllAnimations();
     // debugMode = true;
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),
@@ -129,7 +145,8 @@ class Player extends SpriteAnimationGroupComponent
 
   @override
   void update(double dt) {
-    print('0: $currentPlaying, $inCave');
+    // print('0: $currentPlaying, $inCave, ${game.isloadfromsavefile}');
+    print('${game.level}, $currentLevel, $inCave');
     if (!gotHit && !reachedCheckpoint) {
       _updatePlayerState();
       if (isAttacking) {
@@ -183,6 +200,7 @@ class Player extends SpriteAnimationGroupComponent
     final isAttackKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyJ);
     final isCrouchKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyG);
     final isSlideKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyH);
+    final isInteractKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyE);
 
     // make sure cant move while normal attack
     if (!isAttacking || isAirAttack) {
@@ -204,6 +222,11 @@ class Player extends SpriteAnimationGroupComponent
       Future.delayed(Duration(milliseconds: 700), () {
         isSliding = false; // Slide duration
       });
+    }
+    if(isInteractKeyPressed && isnearBonfire){
+      saveGameData();
+      // print('incave: $inCave');
+      // loadGameData();
     }
 
     // still got error with up attack so add more later
@@ -239,6 +262,33 @@ class Player extends SpriteAnimationGroupComponent
 
     return super.onKeyEvent(event, keysPressed);
   }
+  void saveGameData() async{
+    PlayerData playerData = PlayerData(
+      x: position.x,
+      y: position.y,
+      hp: hp,
+      level: currentLevel,
+      bonfireName: currentBonfire,
+      inCave: inCave,
+    );
+
+    SettingsData settingsData = SettingsData(
+      soundVolume: soundVolume,
+      playSounds: playSounds,
+    );
+    GameData gameData = GameData(playerData: playerData, settingsData: settingsData);
+    await game.saveGameData(gameData);
+  }
+
+  // void loadGameData() async {
+  //   GameData? gameData = await game.loadGameData();
+  //   if (gameData != null) {
+  //     print('Player HP: ${gameData.playerData.hp}');
+  //     print('Player Position: (${gameData.playerData.x}, ${gameData.playerData.y})');
+  //     print('Sound Volume: ${gameData.settingsData.soundVolume}');
+  //     print('Play Sounds: ${gameData.settingsData.playSounds}, inCave: ${gameData.playerData.inCave}');
+  //   }
+  // }
 
   Future<void> _loadAllAnimations() async {
     // Load animations state
@@ -472,7 +522,7 @@ class Player extends SpriteAnimationGroupComponent
               isAttackCdEnemy == false)) {
         isAttackCdEnemy = true;
         // Future.delayed(const Duration(milliseconds: 1300), () {
-        takeDamage(20);
+        takeDamage(50);
         _cooldownTimer = hurtCooldown;
         // });
         Future.delayed(const Duration(milliseconds: 1000), () {
@@ -489,10 +539,24 @@ class Player extends SpriteAnimationGroupComponent
       }
       if(other is Checkpoint) _reachedCheckpoint();
 
-      if(other is BgmCheckpoint) {
-        if(game.playSounds) {
-          forestBGM();
-        }
+      if(other is BgmCheckpoint && game.playSounds && inCaveCheck == false) {
+          // print(game.level);
+          // forestBGM();
+          inCave = true;
+          changeBGM();
+      }else{
+          // forestBGM();
+          inCave = false;
+          changeBGM();
+          // inCaveCheck = false;
+      }
+      // }
+      if(other is Bonfire && !isnearBonfire){
+        isnearBonfire = true;
+        currentBonfire = other.spot;
+        print('currentBonfire: $currentBonfire');
+      }else{
+        isnearBonfire = false;
       }
     }
     super.onCollision(intersectionPoints, other);
@@ -637,10 +701,10 @@ class Player extends SpriteAnimationGroupComponent
             current = PlayerState.idle;
             position = startingPosition; // Reset position
             gotHit = false; 
-            print('1: $currentPlaying, $inCave');
+            // print('1: $currentPlaying, $inCave');
             inCave = true;
-            forestBGM();
-            print('2: $currentPlaying, $inCave');
+            changeBGM();
+            // print('2: $currentPlaying, $inCave');
             // Remove the respawn screen and reset player state
             navigatorKey.currentState?.pop(); // Go back to the game
             // Reset hit state
@@ -744,55 +808,75 @@ class Player extends SpriteAnimationGroupComponent
     });
   }
 
-  void changeBGM() {
-    inCave = false;
+  void changeBGM() async {
+    // inCave = false;
     switch (currentLevel) {
       case 'forestmap':
         if(game.playSounds) {
-          FlameAudio.bgm.stop();
-          FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume);
+          await forestBGM();
+        //   FlameAudio.bgm.stop();
+        //   FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
         }
         break;
 
       case 'castlemap':
         if(game.playSounds) {
           FlameAudio.bgm.stop();
-          FlameAudio.bgm.play('Sis Puella Magica.mp3', volume: game.soundVolume);
+          await FlameAudio.bgm.play('Sis Puella Magica.mp3', volume: game.soundVolume * .5);
         }
         break;
       default:
     }
   }
-  void forestBGM() {
-    switch (inCave) {
-      case false:
-        if(currentPlaying == 'Things That Scheme in the Dark'){
-            FlameAudio.bgm.resume();
-            inCave = true;
-        }else{
-          FlameAudio.bgm.stop();
-          FlameAudio.bgm.play('Things That Scheme in the Dark.mp3', volume: game.soundVolume);
-          Future.delayed(const Duration(seconds: 3), () { 
-            inCave = true;
-            currentPlaying = 'Things That Scheme in the Dark';
-          });
-        }
-        break;
+  Future<void> forestBGM() async {
+    // switch (inCave) {
+    //   case false:
+    //     if(currentPlaying == 'Things That Scheme in the Dark'){
+    //         FlameAudio.bgm.resume();
+    //         inCave = true;
+    //     }else if(game.isloadfromsavefile && game.level == 'forestmap'){
+    //       FlameAudio.bgm.stop();
+    //       FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
+    //       inCave = false;
+    //     }else{
+    //       FlameAudio.bgm.stop();
+    //       FlameAudio.bgm.play('Things That Scheme in the Dark.mp3', volume: game.soundVolume * .5);
+    //       Future.delayed(const Duration(seconds: 3), () { 
+    //         inCave = true;
+    //         currentPlaying = 'Things That Scheme in the Dark';
+    //       });
+    //     }
+    //     // print('forestbgm: $inCave');
+    //     break;
 
-      case true:
-        if(currentPlaying == 'Life and Legacy'){
-          FlameAudio.bgm.resume();
-          inCave = false;
-        }else{
-          FlameAudio.bgm.stop();
-          FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume);
-          Future.delayed(const Duration(seconds: 3), () { 
-            inCave = false;
-            currentPlaying = 'Life and Legacy';
-          });
-        }
-        break;
-      default:
+    //   case true:
+    //     if(currentPlaying == 'Life and Legacy'){
+    //       FlameAudio.bgm.resume();
+    //       inCave = false;
+    //     }else if(game.isloadfromsavefile && game.level == 'forestmap'){
+    //       FlameAudio.bgm.stop();
+    //       FlameAudio.bgm.play('Things That Scheme in the Dark.mp3', volume: game.soundVolume * .5);
+    //       inCave = true;
+    //     }else{
+    //       FlameAudio.bgm.stop();
+    //       FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
+    //       Future.delayed(const Duration(seconds: 3), () { 
+    //         inCave = false;
+    //         currentPlaying = 'Life and Legacy';
+    //       });
+    //     }
+    //     break;
+    //   default:
+    // }
+
+    if(inCave == false){
+      FlameAudio.bgm.stop();
+      await FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
+      inCaveCheck = false;
+    }else{
+      FlameAudio.bgm.stop();
+      await FlameAudio.bgm.play('Things That Scheme in the Dark.mp3', volume: game.soundVolume * .5);
+      inCaveCheck = true;
     }
   }
 }

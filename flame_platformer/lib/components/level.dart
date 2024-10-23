@@ -7,6 +7,7 @@ import 'package:flame_platformer/components/Enemies/Flyingeye.dart';
 import 'package:flame_platformer/components/Enemies/Mushroom.dart';
 import 'package:flame_platformer/components/background_tile.dart';
 import 'package:flame_platformer/components/bgm_checkpoint.dart';
+import 'package:flame_platformer/components/bonfire.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
 import 'package:flame_platformer/components/collision_block.dart';
 import 'package:flame_platformer/components/healthbar/enemy_health_bar.dart';
@@ -73,7 +74,11 @@ class Level extends World with HasGameRef<FlamePlatformer> {
         switch (spawnpoint.class_) {
           //player
           case 'Player':
-            player.position = Vector2(spawnpoint.x, spawnpoint.y);
+            if(game.isloadfromsavefile){
+              player.position = Vector2(game.x, game.y);
+            }else{
+              player.position = Vector2(spawnpoint.x, spawnpoint.y);
+            }
             // player.anchor = Anchor.center;
             add(player);
             break;
@@ -155,7 +160,8 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(saw);
           break;
-
+          
+          //bgm change
           case 'BGM_Checkpoint':
             final bgmCheckpoint = BgmCheckpoint(
               spot: spawnpoint.name,
@@ -164,6 +170,17 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             );
             add(bgmCheckpoint);
           break;
+
+          //bonfire
+          case 'Bonfire':
+            final bonfire = Bonfire(
+              spot: spawnpoint.name,
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+            );
+            add(bonfire);
+          break;
+
           //checkpoint
           case 'Checkpoint':
             final checkpoint = Checkpoint(

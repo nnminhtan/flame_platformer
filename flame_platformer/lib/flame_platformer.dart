@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 // import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame_platformer/components/game%20data/gamedata.dart';
 import 'package:flame_platformer/components/healthbar/health_bar.dart';
 import 'package:flame_platformer/components/healthbar/player_health_bar.dart';
 import 'package:flame_platformer/components/ControlButton/Jump_Button.dart';
@@ -12,16 +15,32 @@ import 'package:flame_platformer/components/ControlButton/attack_button.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/components/level.dart';
 import 'package:flutter/painting.dart';
+import 'package:path_provider/path_provider.dart';
 
 class FlamePlatformer extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks, HasCollisionDetection {
+  //from save data
+  double hp;
+  double x;
+  double y;
+  String level;
+  String bonfireName;
+  bool inCave;
 
   bool playSounds;
   double soundVolume;
+  bool isloadfromsavefile;
 
   FlamePlatformer({
+    this.hp = 100.0,
+    this.x = 272,
+    this.y = 416,
+    this.level = 'forestmap',
+    this.bonfireName = 'Bonfire_Ground',
+    this.inCave = false,
     this.playSounds = true,  // Optional, default to true
-    this.soundVolume = 1.0,  // Optional, default to 1.0
+    this.soundVolume = 1.0, 
+    this.isloadfromsavefile = false,  // Optional, default to 1.0
   });
 
   late CameraComponent cam;
@@ -34,8 +53,7 @@ class FlamePlatformer extends FlameGame
   double zoomScale = 5.0;
 
   List<String> levelNames = ['forestmap', 'castlemap'];
-  int currentLevelIndex = 0;
-  
+  int currentLevelIndex = 0;  
 
   @override
   FutureOr<void> onLoad() async {
@@ -44,11 +62,17 @@ class FlamePlatformer extends FlameGame
     // load images to cache
     await images.loadAllImages();
 
-    print('Sound volume: $soundVolume, Sound is on: $playSounds');
+    print('Sound volume: $soundVolume, Sound is on: $playSounds, incave: $inCave');
     
     // _loadLevel();
     Future.delayed(const Duration(seconds: 1), () async {
       addJoystick();
+
+      for(int i = 0; i < levelNames.length; i++) {
+        if(level == levelNames[i]){
+          currentLevelIndex = i;
+        }
+      }
       final world = Level(
         levelName: levelNames[currentLevelIndex],
         player: player,
@@ -200,4 +224,21 @@ class FlamePlatformer extends FlameGame
       // TODO: implement onLoad
     });
   }
+
+  // Save game data
+  Future<void> saveGameData(GameData gameData) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      print('Directory path: ${directory.path}');
+      final path = '${directory.path}/game_data.json';  // Save in one file
+      print('save: $path');
+      final file = File(path);
+      final jsonData = jsonEncode(gameData.toJson());  // Convert GameData to JSON
+      await file.writeAsString(jsonData);
+    } catch (e, stacktrace) {
+      print('Error saving game data: $e');
+      print('Stacktrace: $stacktrace');
+    }
+  }
+
 }
