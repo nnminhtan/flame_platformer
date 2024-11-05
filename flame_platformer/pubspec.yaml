@@ -102,6 +102,9 @@ flutter:
     - assets/images/Shit/Attacks3/
     - assets/images/Shit/Idle/
     - assets/images/Shit/Run/
+    - assets/images/Enemies/Monster/Necromancer/
+    - assets/images/Enemies/Monster/Spells/Molten_Spear/
+    - assets/images/Enemies/Monster/Spells/Fire_Ball/
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

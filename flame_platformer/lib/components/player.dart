@@ -4,6 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
+import 'package:flame_platformer/components/Enemies/Spells/spell.dart';
 import 'package:flame_platformer/components/bgm_checkpoint.dart';
 import 'package:flame_platformer/components/bonfire.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
@@ -539,7 +540,15 @@ class Player extends SpriteAnimationGroupComponent
           _cooldownTimer = hurtCooldown;
         }
       }
-      if (other is Checkpoint) _reachedCheckpoint();
+      
+      if ((other is Spell) && (_cooldownTimer <= 0 && gotHit == false)) {
+        if (hp > 0) {
+          takeDamage(40);
+          _cooldownTimer = hurtCooldown;
+        }
+      }
+
+      if(other is Checkpoint) _reachedCheckpoint();
 
       if (other is BgmCheckpoint && game.playSounds && inCaveCheck == false) {
         // print(game.level);

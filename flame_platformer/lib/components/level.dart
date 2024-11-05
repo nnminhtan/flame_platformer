@@ -7,6 +7,8 @@ import 'package:flame_platformer/components/Enemies/Boss.dart';
 import 'package:flame_platformer/components/Enemies/Flyingeye.dart';
 import 'package:flame_platformer/components/Enemies/Mushroom.dart';
 import 'package:flame_platformer/components/Enemies/Shit.dart';
+import 'package:flame_platformer/components/Enemies/Spells/spell.dart';
+import 'package:flame_platformer/components/Enemies/necromancer.dart';
 import 'package:flame_platformer/components/background_tile.dart';
 import 'package:flame_platformer/components/bgm_checkpoint.dart';
 import 'package:flame_platformer/components/bonfire.dart';
@@ -133,6 +135,19 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             add(EnemyHealthBar(flyingeye));
             break;
 
+          case 'Necromancer':
+            final offNeg = spawnpoint.properties.getValue('offNeg');
+            final offPos = spawnpoint.properties.getValue('offPos');
+            final necro = Necromancer(
+                position: Vector2(spawnpoint.x, spawnpoint.y),
+                size: Vector2(spawnpoint.width, spawnpoint.height),
+                offNeg: offNeg,
+                offPos: offPos,
+                maxHp: 300);
+            add(necro);
+            // add(EnemyHealthBar(necro));
+            break;
+
           case 'Shit':
             final offNeg = spawnpoint.properties.getValue('offNeg');
             final offPos = spawnpoint.properties.getValue('offPos');
@@ -159,6 +174,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             add(boss);
             add(EnemyHealthBar(boss));
             break;
+            
           //traps
           case 'Thorn':
             final thorn = Thorn(
@@ -222,6 +238,63 @@ class Level extends World with HasGameRef<FlamePlatformer> {
           default:
         }
       }
+    }
+  }
+  final Map<String, Spell> _spells = {};
+  void addSpell(String spellName, Vector2 position, Vector2 size, double? offNeg, double? offPos){
+    final spell = Spell(
+      spell: spellName,
+      offNeg: offNeg,
+      offPos: offPos,
+      position: position,
+      size: size,
+    );
+    add(spell);
+    _spells[spellName] = spell;
+    add(spell);
+  }
+  void removeSpell(String spellName) {
+    final spell = _spells[spellName];
+    if (spell != null) {
+      spell.removeFromParent(); // This removes the spell from the game world
+      _spells.remove(spellName); // Remove it from the map
+    }
+  }
+  void summonEntities(String enemyName, double offNeg, double offPos, Vector2 position, Vector2 size){  
+    switch (enemyName) {
+      case 'Flying eye':
+            final flyingeye = Flyingeye(
+              position: position,
+              size: size,
+              offNeg: offNeg,
+              offPos: offPos,
+              maxHp: 150,
+            );
+            add(flyingeye);
+            add(EnemyHealthBar(flyingeye));
+        break;
+      case 'Mushroom':
+            final mushroom = Mushroom(
+              position: position,
+              size: size,
+              offNeg: offNeg,
+              offPos: offPos,
+              maxHp: 100,
+            );
+            add(mushroom);
+            add(EnemyHealthBar(mushroom));
+        break;   
+        case 'Skeleton':
+        default:
+            final skeleton = Skeleton(
+                position: position,
+                size: size,
+                offNeg: offNeg,
+                offPos: offPos,
+                maxHp: 150);
+            add(skeleton);
+            add(EnemyHealthBar(skeleton));
+        break;         
     }
   }
 

@@ -56,6 +56,12 @@ class CustomHitbox {
         return CustomHitbox(offsetX: 25, offsetY: 5, width: 21, height: 30);
       case 'playerPlungeAttack':
         return CustomHitbox(offsetX: 14, offsetY: 4, width: 21, height: 30);
+      case 'none':
+        return CustomHitbox(offsetX: 0, offsetY: 0, width: 1, height: 1);
+      case 'spell_spear':
+        return CustomHitbox(offsetX: 4, offsetY: 24, width: 24, height: 16*3);
+      case 'spell_fireball':
+        return CustomHitbox(offsetX: 4, offsetY: 4, width: 16*3, height: 24);
       case '':
       default:
         // Default hitbox if object name is not recognized

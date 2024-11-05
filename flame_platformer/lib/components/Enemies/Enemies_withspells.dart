@@ -1,22 +1,26 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_platformer/components/Enemies/Flyingeye.dart';
 import 'package:flame_platformer/components/Enemies/Mushroom.dart';
 import 'package:flame_platformer/components/Enemies/Skeleton.dart';
+import 'package:flame_platformer/components/Enemies/Spells/spell.dart';
+import 'package:flame_platformer/components/Enemies/necromancer.dart';
 import 'package:flame_platformer/components/custom_hitbox.dart';
+import 'package:flame_platformer/components/level.dart';
 import 'package:flame_platformer/components/player.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 
-enum EnemyState { idle, run, attack }
+enum EnemyState { idle, run, summon, spell1, spell2, teleport, die}
 
 
-abstract class Enemies extends SpriteAnimationGroupComponent
+abstract class EnemiesWithspells extends SpriteAnimationGroupComponent
     with HasGameRef<FlamePlatformer>, CollisionCallbacks {
   final double offNeg;
   final double offPos;
-
+  
   double hp = 100.0;
   final double maxHp;
   //hitbox for enemies
@@ -29,7 +33,7 @@ abstract class Enemies extends SpriteAnimationGroupComponent
   // = CustomHitbox.fromPreset(enemyHitbox);
 
 
-  Enemies({
+  EnemiesWithspells({
     super.position,
     super.size,
     this.offNeg = 0,
@@ -52,7 +56,9 @@ abstract class Enemies extends SpriteAnimationGroupComponent
   double attackCooldown = 1.5;
   double cooldownTimer = 0.0;
 
+  Level get level => gameRef.children.firstWhere((component) => component is Level) as Level;
   late final Player player;
+  late Spell spell;
   RectangleHitbox getHitbox(); //lấy hitbox từ lớp con
 
   @override
@@ -117,55 +123,86 @@ abstract class Enemies extends SpriteAnimationGroupComponent
   }
 
   checkWhoIsAttacking(PositionComponent attacker, Player player) {
-  if (attacker is Skeleton) {
+  if (attacker is Necromancer) {
     return 'skeletonAttack1';
-  } else if (attacker is Flyingeye) {
-    return 'flyingeyeAttack1';
-  } else if (attacker is Mushroom) {
-    return 'mushroomAttack1';
-  }else{
-    return 'none';
   }
 }
+  EnemyState getRandomState() {
+    final random = Random();
+    int index = random.nextInt(5);  // Generates a random integer between 0 and 2
 
+    switch (index) {
+      case 0:
+      case 3:
+        return EnemyState.spell1;
+      case 1:
+      case 4:
+        return EnemyState.spell2;
+      case 2:
+        return EnemyState.summon;
+      default:
+        return EnemyState.spell1;  // Fallback, although it won't reach here
+    }
+  }
 
   //Tấn công người chơi
   void attackPlayer(Player player) {
     if (!isAttacking) {
       isAttacking = true;
-      current = EnemyState.attack;
-      // hitbox = CustomHitbox.fromPreset(enemyHitboxMap[current]!);
-      enemyHitbox = checkWhoIsAttacking(this, player);
+      current = getRandomState();
+      switch (current) {
+        //Spear drop
+        case EnemyState.spell1:
+            // hitbox = CustomHitbox.fromPreset(enemyHitboxMap[current]!);
+            enemyHitbox = checkWhoIsAttacking(this, player);
 
-      double attackAnimationDuration =
-          (animations?[EnemyState.attack]?.frames.length ?? 0) * stepTime;
-      Future.delayed(
-          Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () async {
+            double attackAnimationDuration =
+                (animations?[EnemyState.spell1]?.frames.length ?? 0) * stepTime;
+            Future.delayed(
+                Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () async {
+              level.addSpell('Spear', Vector2(player.position.x-32, player.position.y-32), Vector2(32, 16*4), null, null);
+              isAttacking = false;
+              cooldownTimer = attackCooldown;
+              current = EnemyState.idle;
+            });
+            Future.delayed(
+                Duration(milliseconds: (attackAnimationDuration * 3000).toInt()), () async {
+              level.removeSpell('Spear');
+            });
+          break;
+        //Fire ball
+        case EnemyState.spell2:
+          enemyHitbox = checkWhoIsAttacking(this, player);
+            double attackAnimationDuration =
+                (animations?[EnemyState.spell1]?.frames.length ?? 0) * stepTime;
+            Future.delayed(
+                Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () async {
+              level.addSpell('FireBall', Vector2(position.x+50, position.y+80), Vector2(16*4, 32), 20, 20);
+              isAttacking = false;
+              cooldownTimer = attackCooldown;
+              current = EnemyState.idle;
+            });
+            Future.delayed(
+                Duration(milliseconds: (attackAnimationDuration * 4000).toInt()), () async {
+              level.removeSpell('FireBall');
+            });
+          break;
+        //summoning a mob
+        case EnemyState.summon:
+          enemyHitbox = checkWhoIsAttacking(this, player);
 
-        // Chỉ thực hiện khi frame cuối của hoạt ảnh tấn công      
-        await addAttackHitbox();
-
-        Future.delayed(const Duration(milliseconds: 50), () {
-          if (enemyHitboxIntersectsPlayer(player)) {
-            Vector2 knockbackDirection;
-            if (player.position.x > position.x) {
-              knockbackDirection = Vector2(1, 0);
-            } else {
-              knockbackDirection = Vector2(-1, 0);
-            }
-            double knockbackStrength = 50;
-            player.position.add(knockbackDirection * knockbackStrength);
-            // player.takeDamage(20);
-          }
-        });
-
-        isAttacking = false;
-        cooldownTimer = attackCooldown;
-        current = EnemyState.idle;
-        Future.delayed(const Duration(milliseconds: 200), () {
-          remove(attackHitbox);
-        });
-      });
+            double attackAnimationDuration =
+                (animations?[EnemyState.spell1]?.frames.length ?? 0) * stepTime;
+            Future.delayed(
+                Duration(milliseconds: (attackAnimationDuration * 1000).toInt()), () async {
+              level.summonEntities('Skeleton', 30, 30, Vector2(position.x+32, position.y+16), Vector2(40*2, 55*2));
+              isAttacking = false;
+              cooldownTimer = attackCooldown;
+              current = EnemyState.idle;
+            });
+          break;
+        default:
+      }
     }
   }
 
