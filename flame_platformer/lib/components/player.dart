@@ -4,7 +4,6 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
-import 'package:flame_platformer/components/Enemies/Spells/spell.dart';
 import 'package:flame_platformer/components/bgm_checkpoint.dart';
 import 'package:flame_platformer/components/bonfire.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
@@ -220,7 +219,7 @@ class Player extends SpriteAnimationGroupComponent
     if (isSlideKeyPressed && isOnGround && !isAttacking && !isSliding) {
       isSliding = true;
       // reset the slide after a duration
-      Future.delayed(const Duration(milliseconds: 700), () {
+      Future.delayed(Duration(milliseconds: 700), () {
         isSliding = false; // Slide duration
       });
     }
@@ -481,12 +480,19 @@ class Player extends SpriteAnimationGroupComponent
     }
   }
 
-  void attack() {
+  void UpdateAttackButton() {
     if (!isAttacking) {
-      // Kiểm tra nếu player chưa đang tấn công
       isAttacking = true;
-      attackTimer = attackDuration; // Đặt thời gian tấn công
-      playerState = PlayerState.normalAttack; // Đặt trạng thái tấn công
+      attackTimer = attackDuration;
+
+      if (current == PlayerState.jump || current == PlayerState.fall) {
+        isAirAttack = true;
+        playerState = PlayerState.airAttack;
+      } else if (isUpAttack) {
+        playerState = PlayerState.upAttack;
+      } else {
+        playerState = PlayerState.normalAttack;
+      }
     }
   }
 
@@ -540,15 +546,7 @@ class Player extends SpriteAnimationGroupComponent
           _cooldownTimer = hurtCooldown;
         }
       }
-      
-      if ((other is Spell) && (_cooldownTimer <= 0 && gotHit == false)) {
-        if (hp > 0) {
-          takeDamage(40);
-          _cooldownTimer = hurtCooldown;
-        }
-      }
-
-      if(other is Checkpoint) _reachedCheckpoint();
+      if (other is Checkpoint) _reachedCheckpoint();
 
       if (other is BgmCheckpoint && game.playSounds && inCaveCheck == false) {
         // print(game.level);
@@ -661,10 +659,12 @@ class Player extends SpriteAnimationGroupComponent
     for (final block in collisionBlocks) {
       if (block.isPlatform) {
         if (checkCollision(this, block)) {
-          velocity.y = 0;
-          position.y = block.y - hitbox.height - hitbox.offsetY;
-          isOnGround = true;
-          break;
+          if (velocity.y > 0) {
+            velocity.y = 0;
+            position.y = block.y - hitbox.height - hitbox.offsetY;
+            isOnGround = true;
+            break;
+          }
         }
       } else {
         if (checkCollision(this, block)) {
@@ -881,20 +881,17 @@ class Player extends SpriteAnimationGroupComponent
     //     break;
     //   default:
     // }
-    try {
-      if (inCave == false) {
-        FlameAudio.bgm.stop();
-        await FlameAudio.bgm
-            .play('Life and Legacy.mp3', volume: game.soundVolume * .5);
-        inCaveCheck = false;
-      } else {
-        FlameAudio.bgm.stop();
-        await FlameAudio.bgm.play('Things That Scheme in the Dark.mp3',
-            volume: game.soundVolume * .5);
-        inCaveCheck = true;
-      }
-    } catch (e) {
-      print('Error: $e');
+
+    if (inCave == false) {
+      FlameAudio.bgm.stop();
+      await FlameAudio.bgm
+          .play('Life and Legacy.mp3', volume: game.soundVolume * .5);
+      inCaveCheck = false;
+    } else {
+      FlameAudio.bgm.stop();
+      await FlameAudio.bgm.play('Things That Scheme in the Dark.mp3',
+          volume: game.soundVolume * .5);
+      inCaveCheck = true;
     }
   }
 }

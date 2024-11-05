@@ -4,20 +4,21 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 
-class AttackButton extends SpriteComponent
+class SLideButton extends SpriteComponent
     with HasGameRef<FlamePlatformer>, TapCallbacks {
-  AttackButton();
+  SLideButton();
 
   final margin = 32;
-  final buttonSize = 64;
-  final offsetX = 80;
+  final buttonSize = 36;
+  final spacing = 16;
+  final offsetX = 20;
 
   @override
   FutureOr<void> onLoad() {
-    sprite = Sprite(game.images.fromCache('HUD/AttackButton.png'));
+    sprite = Sprite(game.images.fromCache('HUD/SlideButton.png'));
     position = Vector2(
       game.size.x - margin - buttonSize - offsetX,
-      game.size.y - margin - buttonSize,
+      game.size.y - margin - buttonSize - 10,
     );
     priority = 10;
     return super.onLoad();
@@ -25,9 +26,10 @@ class AttackButton extends SpriteComponent
 
   @override
   void onTapDown(TapDownEvent event) {
-    if (!game.player.isAttacking) {
-      game.player.UpdateAttackButton();
-    }
+    game.player.isSliding = true;
+    Future.delayed(Duration(milliseconds: 700), () {
+      game.player.isSliding = false;
+    });
     super.onTapDown(event);
   }
 

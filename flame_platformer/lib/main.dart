@@ -1,28 +1,34 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/flame.dart';
-import 'package:flame/game.dart' as flame; // Alias flame to avoid conflict between route
+import 'package:flame/game.dart'
+    as flame; // Alias flame to avoid conflict between route
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flame_platformer/locallization/applocalizations.dart';
 import 'package:flame_platformer/components/game%20data/gamedata.dart';
 import 'package:flame_platformer/firebase_options.dart';
 import 'package:flame_platformer/flame_platformer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'locallization/localprovider.dart';
 
 // Global variables for sound settings
 bool playSounds = true;
 double soundVolume = 1.0;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name: "platformer-game-fe9ef",
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await Flame.device.fullScreen();
@@ -32,22 +38,54 @@ void main() async {
   }
 
   runApp(
-    MaterialApp(
-      navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      home: MenuScreen(), // Start with the menu screen
+    ChangeNotifierProvider(
+      create: (context) => LocaleProvider(), // Add the LocaleProvider
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            navigatorKey: navigatorKey,
+            debugShowCheckedModeBanner: false,
+            home: MenuScreen(), // Start with the menu screen
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''),
+              Locale('vi', ''),
+            ],
+            locale: Provider.of<LocaleProvider>(context)
+                .currentLocale, // Get current locale from provider
+          );
+        },
+      ),
     ),
   );
 }
 
-class MenuScreen extends StatefulWidget {
-  const MenuScreen({super.key});
+Future<UserCredential> signInWithGoogle() async {
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
 
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
+
+class MenuScreen extends StatefulWidget {
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
 class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
+  bool _isSignedIn = false;
+
   @override
   void initState() {
     super.initState();
@@ -78,6 +116,37 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> handleSignIn() async {
+    try {
+      UserCredential userCredential = await signInWithGoogle();
+      print("Signed in as: ${userCredential.user?.displayName}");
+
+      setState(() {
+        _isSignedIn = true;
+      });
+
+      // Hiển thị Snackbar thông báo đăng nhập thành công
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Signed in successfully!"),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      print("Sign-in failed: $e");
+
+      // Hiển thị Snackbar với lỗi chi tiết
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Sign-in failed: $e"),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   // void loadGameData(){
   //   // Load GameData from file
   //   Future<GameData?> loadGameData() async {
@@ -99,7 +168,7 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
   Future<GameData> loadGameDataFromFile(String filePath) async {
     final file = File(filePath);
     final jsonData = await file.readAsString();
-    
+
     // Deserialize the JSON data to GameData object
     return GameData.fromJson(jsonDecode(jsonData));
   }
@@ -113,7 +182,7 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Migga', // Replace with your game title
+              AppLocalizations.of(context)!.translate('title'),
               style: GoogleFonts.cinzelDecorative(
                 textStyle: const TextStyle(
                   fontSize: 60,
@@ -123,7 +192,7 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
               ),
             ),
             Text(
-              'Beyond Journey\'s End', // Replace with your game subtitle
+              AppLocalizations.of(context)!.translate('subtitle'),
               style: GoogleFonts.cinzelDecorative(
                 textStyle: const TextStyle(
                   fontSize: 38,
@@ -132,7 +201,7 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 FlameAudio.bgm.stop();
@@ -149,8 +218,8 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                 );
               },
               child: Text(
-                'New Game',
-                style: GoogleFonts.cinzelDecorative(
+                AppLocalizations.of(context)!.translate('new_game'),
+                style: GoogleFonts.grenzeGotisch(
                   textStyle: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -159,7 +228,27 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                 ),
               ),
             ),
-            const SizedBox(height: 20), // Add space between buttons
+            // const SizedBox(height: 20), // Add space between buttons
+            if (!_isSignedIn)
+              Column(
+                children: [
+                  const SizedBox(height: 10), // Add space between buttons
+                  ElevatedButton(
+                    onPressed: handleSignIn,
+                    child: Text(
+                      AppLocalizations.of(context)!.translate('sign_in_google'),
+                      style: GoogleFonts.grenzeGotisch(
+                        textStyle: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
                 FlameAudio.bgm.stop();
@@ -170,15 +259,17 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                     builder: (context) => LoadGameScreen(
                       onGameSelected: (selectedFilePath) async {
                         // Load the game data from the selected file
-                        final gameData = await loadGameDataFromFile(selectedFilePath);
+                        final gameData =
+                            await loadGameDataFromFile(selectedFilePath);
                         print('hp: ${gameData.playerData.hp}');
-                                print('x: ${gameData.playerData.x}');
-                                print('y: ${gameData.playerData.y}');
-                                print('level: ${gameData.playerData.level}');
-                                print('bonfireName: ${gameData.playerData.bonfireName}');
-                                print('inCave: ${gameData.playerData.inCave}');
-                                print('playSounds: $playSounds');
-                                print('soundVolume: $soundVolume');
+                        print('x: ${gameData.playerData.x}');
+                        print('y: ${gameData.playerData.y}');
+                        print('level: ${gameData.playerData.level}');
+                        print(
+                            'bonfireName: ${gameData.playerData.bonfireName}');
+                        print('inCave: ${gameData.playerData.inCave}');
+                        print('playSounds: ${playSounds}');
+                        print('soundVolume: ${soundVolume}');
                         // Navigate to game screen with the loaded data
                         Navigator.pushAndRemoveUntil(
                           context,
@@ -195,7 +286,8 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                               isloadfromsavefile: true,
                             ),
                           ),
-                          (Route<dynamic> route) => false, // Remove all previous routes
+                          (Route<dynamic> route) =>
+                              false, // Remove all previous routes
                         );
                       },
                     ),
@@ -203,17 +295,17 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                 );
               },
               child: Text(
-                'Load Game',
-                style: GoogleFonts.cinzelDecorative(
+                AppLocalizations.of(context)!.translate('load_game'),
+                style: GoogleFonts.grenzeGotisch(
                   textStyle: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
-              ), 
+              ),
             ),
-            const SizedBox(height: 20), // Add space between buttons
+            const SizedBox(height: 10), // Add space between buttons
             ElevatedButton(
               onPressed: () {
                 // Navigate to settings or handle settings logic here
@@ -223,9 +315,9 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                 );
               },
               child: Text(
-                'Settings',
-                style: GoogleFonts.cinzelDecorative(
-                    textStyle: const TextStyle(
+                AppLocalizations.of(context)!.translate('settings'),
+                style: GoogleFonts.grenzeGotisch(
+                  textStyle: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 0, 0, 0),
@@ -241,7 +333,6 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
 }
 
 class GameScreen extends StatelessWidget {
-
   final double? hp;
   final double? x;
   final double? y;
@@ -252,14 +343,14 @@ class GameScreen extends StatelessWidget {
   final bool playSounds;
   final double soundVolume;
   final bool? isloadfromsavefile;
-  const GameScreen({super.key, 
+  GameScreen({
     this.hp,
     this.x,
     this.y,
     this.level,
     this.bonfireName,
     this.inCave,
-    required this.playSounds,  // Optional, default to true
+    required this.playSounds, // Optional, default to true
     required this.soundVolume,
     this.isloadfromsavefile,
   });
@@ -289,8 +380,10 @@ class GameScreen extends StatelessWidget {
                 level: level ?? 'forestmap',
                 bonfireName: bonfireName ?? 'Bonfire_Ground',
                 inCave: inCave ?? false,
-                playSounds: playSounds ?? true, // Use passed value or default to true
-                soundVolume: soundVolume ?? 1.0, // Use passed value or default to 1.0
+                playSounds:
+                    playSounds ?? true, // Use passed value or default to true
+                soundVolume:
+                    soundVolume ?? 1.0, // Use passed value or default to 1.0
                 isloadfromsavefile: isloadfromsavefile ?? false,
               )
             : game, // Game is displayed when you reach this screen
@@ -300,8 +393,6 @@ class GameScreen extends StatelessWidget {
 }
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
-
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -311,7 +402,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(AppLocalizations.of(context)!.translate('settings')),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -324,8 +415,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Play Sounds',
+                Text(
+                  AppLocalizations.of(context)!.translate('play_sounds'),
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 Checkbox(
@@ -343,14 +434,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
 
             // Sound Volume Slider
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Sound Volume',
+                Text(
+                  AppLocalizations.of(context)!.translate('sound_volume'),
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 Expanded(
@@ -364,7 +455,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {
                         soundVolume = value;
                         if (playSounds) {
-                          FlameAudio.bgm.play('He is.mp3', volume: soundVolume * .5); // Restart with new volume
+                          FlameAudio.bgm.play('He is.mp3',
+                              volume:
+                                  soundVolume * .5); // Restart with new volume
                         }
                       });
                     },
@@ -372,8 +465,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 30),
 
+            const SizedBox(height: 10),
+            // Language Switch Button
+            ElevatedButton(
+              onPressed: () {
+                // Switch the language
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .switchLocale();
+              },
+              child: Text(
+                AppLocalizations.of(context)!.translate('switch_language'),
+                style: GoogleFonts.grenzeGotisch(
+                  textStyle: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 30),
             // Return to Menu Button
             ElevatedButton(
               onPressed: () {
@@ -383,14 +496,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Navigator.pop(context); // Return to Menu
               },
               child: Text(
-                'Return to Menu',
-                  style: GoogleFonts.cinzelDecorative(
-                    textStyle: const TextStyle(
+                AppLocalizations.of(context)!.translate('return_menu'),
+                style: GoogleFonts.grenzeGotisch(
+                  textStyle: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 0, 0, 0),
                   ),
-                ), 
+                ),
               ),
             ),
           ],
@@ -401,9 +514,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 }
 
 class LoadGameScreen extends StatefulWidget {
-  final Function(String) onGameSelected; // Callback to pass the selected file path
+  final Function(String)
+      onGameSelected; // Callback to pass the selected file path
 
-  const LoadGameScreen({super.key, required this.onGameSelected});
+  const LoadGameScreen({Key? key, required this.onGameSelected})
+      : super(key: key);
 
   @override
   _LoadGameScreenState createState() => _LoadGameScreenState();
@@ -420,7 +535,9 @@ class _LoadGameScreenState extends State<LoadGameScreen> {
 
   Future<void> _loadSavedGames() async {
     final directory = await getApplicationDocumentsDirectory();
-    final savedFiles = directory.listSync().where((item) => item is File && item.path.endsWith('.json'));
+    final savedFiles = directory
+        .listSync()
+        .where((item) => item is File && item.path.endsWith('.json'));
 
     setState(() {
       _savedGames = savedFiles.map((item) => item as File).toList();
@@ -430,7 +547,7 @@ class _LoadGameScreenState extends State<LoadGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Load Game')),
+      appBar: AppBar(title: Text('Load Game')),
       body: ListView.builder(
         itemCount: _savedGames.length,
         itemBuilder: (context, index) {
@@ -447,4 +564,3 @@ class _LoadGameScreenState extends State<LoadGameScreen> {
     );
   }
 }
-

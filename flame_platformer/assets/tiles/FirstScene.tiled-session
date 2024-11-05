@@ -44,7 +44,7 @@
             "scaleInDock": 1
         },
         "castle_decor.tsx": {
-            "scaleInDock": 1.5,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "castle_env.tsx": {
@@ -54,18 +54,18 @@
         },
         "castle_tile.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 2
+            "scaleInDock": 1.5
         },
         "castlemap.tmx": {
             "expandedObjectLayers": [
                 2,
                 3
             ],
-            "scale": 2.967,
-            "selectedLayer": 6,
+            "scale": 0.5,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 1272.1604314122008,
-                "y": 512.133468149646
+                "x": 960,
+                "y": 511
             }
         },
         "env_ground.tsx": {
@@ -86,11 +86,11 @@
             "expandedObjectLayers": [
                 8
             ],
-            "scale": 1.7709,
+            "scale": 0.5,
             "selectedLayer": 10,
             "viewCenter": {
-                "x": 194.5338528431871,
-                "y": 503.41634197300806
+                "x": 605,
+                "y": 480
             }
         },
         "idle.tsx": {

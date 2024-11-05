@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 // import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame_platformer/components/ControlButton/slide_button.dart';
 import 'package:flame_platformer/components/game%20data/gamedata.dart';
 import 'package:flame_platformer/components/healthbar/health_bar.dart';
 import 'package:flame_platformer/components/healthbar/player_health_bar.dart';
@@ -153,6 +156,7 @@ class FlamePlatformer extends FlameGame
     add(joystick);
     add(AttackButton());
     add(JumpButton());
+    add(SLideButton());
   }
 
   void updateJoystick() {
@@ -170,12 +174,9 @@ class FlamePlatformer extends FlameGame
         // print('Joystick Dir: ${joystick.direction}');
         player.horizontalMovement = 1;
         break;
-      //change this later to jump
-
       //stop
       default:
         // player.horizontalMovement = 0;
-        // player.hasJumped = false;
         break;
     }
   }
@@ -236,6 +237,21 @@ class FlamePlatformer extends FlameGame
       await file.writeAsString(jsonData);
     } catch (e, stacktrace) {
       print('Error saving game data: $e');
+      print('Stacktrace: $stacktrace');
+    }
+
+    // Then save to Firebase if the user is signed in
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final db = FirebaseFirestore.instance;
+        await db.collection('game_data').doc(user.uid).set(gameData.toJson());
+        print('Game data saved to Firebase for user ${user.uid}');
+      } else {
+        print('No user signed in; Firebase save skipped.');
+      }
+    } catch (e, stacktrace) {
+      print('Error saving game data to Firebase: $e');
       print('Stacktrace: $stacktrace');
     }
   }

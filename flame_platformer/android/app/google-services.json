@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "1090212787991",
     "project_id": "platformer-game-fe9ef",
-    "storage_bucket": "platformer-game-fe9ef.appspot.com"
+    "storage_bucket": "platformer-game-fe9ef.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +12,20 @@
           "package_name": "com.example.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1090212787991-448lt0uelg4c9pephk4qfn5ickrk8fgn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.app",
+            "certificate_hash": "706bd60b199cbe078763ba35ac9ee20abd9de651"
+          }
+        },
+        {
+          "client_id": "1090212787991-kqrtad8oabeg5j4fqm9j7uujieb6r8n9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB1ODnu6J_oPFXZrpd1QHjnwmvsFWUKLHE"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090212787991-i21fbfd9hqc023aj7t2mnt7vgalqnqog.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1090212787991-l7p2bomfjtdtjlocbobjotiun4s46o31.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flamePlatformer"
+              }
+            }
+          ]
         }
       }
     }
