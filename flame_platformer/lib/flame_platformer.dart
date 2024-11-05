@@ -38,9 +38,9 @@ class FlamePlatformer extends FlameGame
     this.level = 'forestmap',
     this.bonfireName = 'Bonfire_Ground',
     this.inCave = false,
-    this.playSounds = true,  // Optional, default to true
-    this.soundVolume = 1.0, 
-    this.isloadfromsavefile = false,  // Optional, default to 1.0
+    this.playSounds = true, // Optional, default to true
+    this.soundVolume = 1.0,
+    this.isloadfromsavefile = false, // Optional, default to 1.0
   });
 
   late CameraComponent cam;
@@ -53,23 +53,23 @@ class FlamePlatformer extends FlameGame
   double zoomScale = 5.0;
 
   List<String> levelNames = ['forestmap', 'castlemap'];
-  int currentLevelIndex = 0;  
+  int currentLevelIndex = 0;
 
   @override
   FutureOr<void> onLoad() async {
-    
     isPaused = true;
     // load images to cache
     await images.loadAllImages();
 
-    print('Sound volume: $soundVolume, Sound is on: $playSounds, incave: $inCave');
-    
+    print(
+        'Sound volume: $soundVolume, Sound is on: $playSounds, incave: $inCave');
+
     // _loadLevel();
     Future.delayed(const Duration(seconds: 1), () async {
       addJoystick();
 
-      for(int i = 0; i < levelNames.length; i++) {
-        if(level == levelNames[i]){
+      for (int i = 0; i < levelNames.length; i++) {
+        if (level == levelNames[i]) {
           currentLevelIndex = i;
         }
       }
@@ -78,8 +78,6 @@ class FlamePlatformer extends FlameGame
         player: player,
       )..priority = 0;
       await add(world);
-
-    
 
       // Get map dimensions
       final mapWidth = world.getMapWidth();
@@ -230,15 +228,15 @@ class FlamePlatformer extends FlameGame
     try {
       final directory = await getApplicationDocumentsDirectory();
       print('Directory path: ${directory.path}');
-      final path = '${directory.path}/game_data.json';  // Save in one file
+      final path = '${directory.path}/game_data.json'; // Save in one file
       print('save: $path');
       final file = File(path);
-      final jsonData = jsonEncode(gameData.toJson());  // Convert GameData to JSON
+      final jsonData =
+          jsonEncode(gameData.toJson()); // Convert GameData to JSON
       await file.writeAsString(jsonData);
     } catch (e, stacktrace) {
       print('Error saving game data: $e');
       print('Stacktrace: $stacktrace');
     }
   }
-
 }

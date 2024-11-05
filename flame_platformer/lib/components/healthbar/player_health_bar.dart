@@ -36,7 +36,7 @@ class PlayerHealthBar extends HealthBar {
       text: '${entity.hp.toInt()}',
       position: Vector2(barWidth - 30, 20),
       textRenderer:
-          TextPaint(style: TextStyle(color: Colors.white, fontSize: 15)),
+          TextPaint(style: const TextStyle(color: Colors.white, fontSize: 15)),
     );
     add(hpNumber);
   }

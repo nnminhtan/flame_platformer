@@ -7,10 +7,10 @@ class RespawnScreen extends StatelessWidget {
   final VoidCallback onBackToMainMenu;
 
   const RespawnScreen({
-    Key? key,
+    super.key,
     required this.onContinue,
     required this.onBackToMainMenu,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

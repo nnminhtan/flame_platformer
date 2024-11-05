@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
+import 'package:flame_platformer/components/Enemies/Boss.dart';
 import 'package:flame_platformer/components/Enemies/Flyingeye.dart';
 import 'package:flame_platformer/components/Enemies/Mushroom.dart';
+import 'package:flame_platformer/components/Enemies/Shit.dart';
 import 'package:flame_platformer/components/background_tile.dart';
 import 'package:flame_platformer/components/bgm_checkpoint.dart';
 import 'package:flame_platformer/components/bonfire.dart';
@@ -74,9 +76,9 @@ class Level extends World with HasGameRef<FlamePlatformer> {
         switch (spawnpoint.class_) {
           //player
           case 'Player':
-            if(game.isloadfromsavefile){
+            if (game.isloadfromsavefile) {
               player.position = Vector2(game.x, game.y);
-            }else{
+            } else {
               player.position = Vector2(spawnpoint.x, spawnpoint.y);
             }
             // player.anchor = Anchor.center;
@@ -130,6 +132,33 @@ class Level extends World with HasGameRef<FlamePlatformer> {
             add(flyingeye);
             add(EnemyHealthBar(flyingeye));
             break;
+
+          case 'Shit':
+            final offNeg = spawnpoint.properties.getValue('offNeg');
+            final offPos = spawnpoint.properties.getValue('offPos');
+            final shit = Shit(
+              position: Vector2(spawnpoint.x, spawnpoint.y),
+              size: Vector2(spawnpoint.width, spawnpoint.height),
+              offNeg: offNeg,
+              offPos: offPos,
+              maxHp: 100,
+            );
+            add(shit);
+            add(EnemyHealthBar(shit));
+            break;
+
+          case 'Boss':
+            final offNeg = spawnpoint.properties.getValue('offNeg');
+            final offPos = spawnpoint.properties.getValue('offPos');
+            final boss = Boss(
+                position: Vector2(spawnpoint.x, spawnpoint.y),
+                size: Vector2(spawnpoint.width, spawnpoint.height),
+                offNeg: offNeg,
+                offPos: offPos,
+                maxHp: 150);
+            add(boss);
+            add(EnemyHealthBar(boss));
+            break;
           //traps
           case 'Thorn':
             final thorn = Thorn(
@@ -159,8 +188,8 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(saw);
-          break;
-          
+            break;
+
           //bgm change
           case 'BGM_Checkpoint':
             final bgmCheckpoint = BgmCheckpoint(
@@ -169,7 +198,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(bgmCheckpoint);
-          break;
+            break;
 
           //bonfire
           case 'Bonfire':
@@ -179,7 +208,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
               size: Vector2(spawnpoint.width, spawnpoint.height),
             );
             add(bonfire);
-          break;
+            break;
 
           //checkpoint
           case 'Checkpoint':
@@ -242,7 +271,7 @@ class Level extends World with HasGameRef<FlamePlatformer> {
         'Adjusted viewport size with zoom: ${adjustedViewportSize.x} x ${adjustedViewportSize.y}');
 
     // Scaling factor, approximately 2.5 (just calculate somehow) for correct bounds
-    final scalingFactor = 2.5;
+    const scalingFactor = 2.5;
 
     final cameraBounds = Rectangle.fromLTRB(
         0 + (adjustedViewportSize.x / 2) * scalingFactor, // Left boundary
@@ -267,5 +296,4 @@ class Level extends World with HasGameRef<FlamePlatformer> {
           true, // If true, the camera snaps to the player instead of moving smoothly
     );
   }
-  
 }

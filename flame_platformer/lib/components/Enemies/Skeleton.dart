@@ -49,7 +49,7 @@ class Skeleton extends Enemies {
   void _loadAllAnimations() {
     _idleAnimation = _spriteAnimation('Skeleton/Idle', 4);
     _runAnimation = _spriteAnimation('Skeleton/Walk', 4);
-    _attackAnimation = _spriteAnimation('Skeleton/Attack', 8)..loop = false;
+    _attackAnimation = _spriteAnimation('Skeleton/Attack', 6)..loop = false;
 
     animations = {
       EnemyState.idle: _idleAnimation,

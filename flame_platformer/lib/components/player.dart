@@ -45,7 +45,7 @@ class Player extends SpriteAnimationGroupComponent
   //default PlayerState
   PlayerState playerState = PlayerState.idle;
   // hp
-  late double hp; 
+  late double hp;
   final double maxHp = 100.0;
 
   // for attack logic
@@ -126,11 +126,11 @@ class Player extends SpriteAnimationGroupComponent
     inCave = game.inCave;
     currentLevel = gameRef.levelNames[gameRef.currentLevelIndex];
     //set player spawnpoint
-    if(game.isloadfromsavefile){
+    if (game.isloadfromsavefile) {
       startingPosition = Vector2(game.x, game.y);
       changeBGM();
       game.isloadfromsavefile = false;
-    }else{
+    } else {
       startingPosition = Vector2(position.x, position.y);
     }
     currentBonfire = game.bonfireName;
@@ -167,17 +167,17 @@ class Player extends SpriteAnimationGroupComponent
       _checkHorizontalCollisions();
       _applyGravity(dt);
       _checkVerticalCollisions();
-    }else if(reachedCheckpoint){
-      Future.delayed(const Duration(seconds: 3), (){
+    } else if (reachedCheckpoint) {
+      Future.delayed(const Duration(seconds: 3), () {
         currentLevel = gameRef.levelNames[gameRef.currentLevelIndex];
         changeBGM();
       });
     }
-    
+
     if (_cooldownTimer > 0) {
       _cooldownTimer -= dt;
     }
-    if(hp <= 0 && gotHit == false){
+    if (hp <= 0 && gotHit == false) {
       _respawn();
     }
 
@@ -219,11 +219,11 @@ class Player extends SpriteAnimationGroupComponent
     if (isSlideKeyPressed && isOnGround && !isAttacking && !isSliding) {
       isSliding = true;
       // reset the slide after a duration
-      Future.delayed(Duration(milliseconds: 700), () {
+      Future.delayed(const Duration(milliseconds: 700), () {
         isSliding = false; // Slide duration
       });
     }
-    if(isInteractKeyPressed && isnearBonfire){
+    if (isInteractKeyPressed && isnearBonfire) {
       saveGameData();
       // print('incave: $inCave');
       // loadGameData();
@@ -262,7 +262,8 @@ class Player extends SpriteAnimationGroupComponent
 
     return super.onKeyEvent(event, keysPressed);
   }
-  void saveGameData() async{
+
+  void saveGameData() async {
     PlayerData playerData = PlayerData(
       x: position.x,
       y: position.y,
@@ -276,7 +277,8 @@ class Player extends SpriteAnimationGroupComponent
       soundVolume: soundVolume,
       playSounds: playSounds,
     );
-    GameData gameData = GameData(playerData: playerData, settingsData: settingsData);
+    GameData gameData =
+        GameData(playerData: playerData, settingsData: settingsData);
     await game.saveGameData(gameData);
   }
 
@@ -537,25 +539,25 @@ class Player extends SpriteAnimationGroupComponent
           _cooldownTimer = hurtCooldown;
         }
       }
-      if(other is Checkpoint) _reachedCheckpoint();
+      if (other is Checkpoint) _reachedCheckpoint();
 
-      if(other is BgmCheckpoint && game.playSounds && inCaveCheck == false) {
-          // print(game.level);
-          // forestBGM();
-          inCave = true;
-          changeBGM();
-      }else{
-          // forestBGM();
-          inCave = false;
-          changeBGM();
-          // inCaveCheck = false;
+      if (other is BgmCheckpoint && game.playSounds && inCaveCheck == false) {
+        // print(game.level);
+        // forestBGM();
+        inCave = true;
+        changeBGM();
+      } else {
+        // forestBGM();
+        inCave = false;
+        changeBGM();
+        // inCaveCheck = false;
       }
       // }
-      if(other is Bonfire && !isnearBonfire){
+      if (other is Bonfire && !isnearBonfire) {
         isnearBonfire = true;
         currentBonfire = other.spot;
         print('currentBonfire: $currentBonfire');
-      }else{
+      } else {
         isnearBonfire = false;
       }
     }
@@ -686,9 +688,9 @@ class Player extends SpriteAnimationGroupComponent
     // Future.delayed(canmoveDuration, () {
     //     gotHit = false;
     // });
-    
+
     // current = PlayerState.idle;
-    
+
     // _updatePlayerState();
     // Push the respawn screen onto the navigator
     await navigatorKey.currentState?.push(
@@ -700,7 +702,7 @@ class Player extends SpriteAnimationGroupComponent
             scale.x = 1;
             current = PlayerState.idle;
             position = startingPosition; // Reset position
-            gotHit = false; 
+            gotHit = false;
             // print('1: $currentPlaying, $inCave');
             inCave = true;
             changeBGM();
@@ -714,12 +716,12 @@ class Player extends SpriteAnimationGroupComponent
             // Logic to go back to the main menu
             navigatorKey.currentState?.pop(); // Close respawn screen
             Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => MenuScreen(), // Ensure this is your main menu widget
-                  ),
-                  
-                );                 
-                FlameAudio.bgm.play('He is.mp3',volume: soundVolume);
+              MaterialPageRoute(
+                builder: (context) =>
+                    MenuScreen(), // Ensure this is your main menu widget
+              ),
+            );
+            FlameAudio.bgm.play('He is.mp3', volume: soundVolume);
             // Implement main menu logic here
           },
         ),
@@ -749,7 +751,7 @@ class Player extends SpriteAnimationGroupComponent
 
     gotHit = true;
     current = PlayerState.hurt;
-    if(game.playSounds) {
+    if (game.playSounds) {
       FlameAudio.play('OOF.mp3', volume: game.soundVolume);
     }
     // position.x = position.x - 15;
@@ -812,22 +814,24 @@ class Player extends SpriteAnimationGroupComponent
     // inCave = false;
     switch (currentLevel) {
       case 'forestmap':
-        if(game.playSounds) {
+        if (game.playSounds) {
           await forestBGM();
-        //   FlameAudio.bgm.stop();
-        //   FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
+          //   FlameAudio.bgm.stop();
+          //   FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
         }
         break;
 
       case 'castlemap':
-        if(game.playSounds) {
+        if (game.playSounds) {
           FlameAudio.bgm.stop();
-          await FlameAudio.bgm.play('Sis Puella Magica.mp3', volume: game.soundVolume * .5);
+          await FlameAudio.bgm
+              .play('Sis Puella Magica.mp3', volume: game.soundVolume * .5);
         }
         break;
       default:
     }
   }
+
   Future<void> forestBGM() async {
     // switch (inCave) {
     //   case false:
@@ -841,7 +845,7 @@ class Player extends SpriteAnimationGroupComponent
     //     }else{
     //       FlameAudio.bgm.stop();
     //       FlameAudio.bgm.play('Things That Scheme in the Dark.mp3', volume: game.soundVolume * .5);
-    //       Future.delayed(const Duration(seconds: 3), () { 
+    //       Future.delayed(const Duration(seconds: 3), () {
     //         inCave = true;
     //         currentPlaying = 'Things That Scheme in the Dark';
     //       });
@@ -860,7 +864,7 @@ class Player extends SpriteAnimationGroupComponent
     //     }else{
     //       FlameAudio.bgm.stop();
     //       FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
-    //       Future.delayed(const Duration(seconds: 3), () { 
+    //       Future.delayed(const Duration(seconds: 3), () {
     //         inCave = false;
     //         currentPlaying = 'Life and Legacy';
     //       });
@@ -868,15 +872,20 @@ class Player extends SpriteAnimationGroupComponent
     //     break;
     //   default:
     // }
-
-    if(inCave == false){
-      FlameAudio.bgm.stop();
-      await FlameAudio.bgm.play('Life and Legacy.mp3', volume: game.soundVolume * .5);
-      inCaveCheck = false;
-    }else{
-      FlameAudio.bgm.stop();
-      await FlameAudio.bgm.play('Things That Scheme in the Dark.mp3', volume: game.soundVolume * .5);
-      inCaveCheck = true;
+    try {
+      if (inCave == false) {
+        FlameAudio.bgm.stop();
+        await FlameAudio.bgm
+            .play('Life and Legacy.mp3', volume: game.soundVolume * .5);
+        inCaveCheck = false;
+      } else {
+        FlameAudio.bgm.stop();
+        await FlameAudio.bgm.play('Things That Scheme in the Dark.mp3',
+            volume: game.soundVolume * .5);
+        inCaveCheck = true;
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
 }

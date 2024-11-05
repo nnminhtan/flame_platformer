@@ -41,6 +41,8 @@ void main() async {
 }
 
 class MenuScreen extends StatefulWidget {
+  const MenuScreen({super.key});
+
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
@@ -175,8 +177,8 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
                                 print('level: ${gameData.playerData.level}');
                                 print('bonfireName: ${gameData.playerData.bonfireName}');
                                 print('inCave: ${gameData.playerData.inCave}');
-                                print('playSounds: ${playSounds}');
-                                print('soundVolume: ${soundVolume}');
+                                print('playSounds: $playSounds');
+                                print('soundVolume: $soundVolume');
                         // Navigate to game screen with the loaded data
                         Navigator.pushAndRemoveUntil(
                           context,
@@ -250,7 +252,7 @@ class GameScreen extends StatelessWidget {
   final bool playSounds;
   final double soundVolume;
   final bool? isloadfromsavefile;
-  GameScreen({
+  const GameScreen({super.key, 
     this.hp,
     this.x,
     this.y,
@@ -298,6 +300,8 @@ class GameScreen extends StatelessWidget {
 }
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -399,7 +403,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class LoadGameScreen extends StatefulWidget {
   final Function(String) onGameSelected; // Callback to pass the selected file path
 
-  const LoadGameScreen({Key? key, required this.onGameSelected}) : super(key: key);
+  const LoadGameScreen({super.key, required this.onGameSelected});
 
   @override
   _LoadGameScreenState createState() => _LoadGameScreenState();
@@ -426,7 +430,7 @@ class _LoadGameScreenState extends State<LoadGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Load Game')),
+      appBar: AppBar(title: const Text('Load Game')),
       body: ListView.builder(
         itemCount: _savedGames.length,
         itemBuilder: (context, index) {

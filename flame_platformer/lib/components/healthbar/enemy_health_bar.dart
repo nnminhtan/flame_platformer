@@ -1,5 +1,7 @@
 import 'package:flame/components.dart';
+import 'package:flame_platformer/components/Enemies/Boss.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
+import 'package:flame_platformer/components/Enemies/Shit.dart';
 import 'package:flame_platformer/components/healthbar/health_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -17,11 +19,20 @@ class EnemyHealthBar extends HealthBar {
       'left': Vector2(-25, 60),
       'right': Vector2(0, 0),
     },
+    'Boss': {
+      'left': Vector2(-40, 120),
+      'right': Vector2(10, -15),
+    },
+    'Shit': {
+      'left': Vector2(-20, 50),
+      'right': Vector2(5, -5),
+    },
   };
 
-  EnemyHealthBar(Enemies enemy)
+  // Constructor nhận một đối tượng `PositionComponent` chung.
+  EnemyHealthBar(PositionComponent entity)
       : super(
-          entity: enemy,
+          entity: entity,
           barWidth: 25,
           barHeight: 3,
           barColor: Colors.red,
@@ -35,18 +46,21 @@ class EnemyHealthBar extends HealthBar {
 
   @override
   void setHealthBarPosition() {
-    final hitbox = entity.getHitbox();
+    // Lấy hitbox của entity
+    final hitbox = entity is Enemies || entity is Boss || entity is Shit
+        ? (entity as dynamic).getHitbox()
+        : entity.position;
+
+    // Lấy offsets dựa trên loại của entity
     final offsets = healthBarOffsets[entity.runtimeType.toString()];
-    if (entity.scale.x < 0) {
-      healthBar.position = entity.position - hitbox.position + offsets!['left'];
-      // print('left');
-    } else {
-      healthBar.position =
-          entity.position + hitbox.position + offsets!['right'];
-      // print('right');
+    if (offsets != null) {
+      if (entity.scale.x < 0) {
+        healthBar.position =
+            entity.position - hitbox.position + offsets['left']!;
+      } else {
+        healthBar.position =
+            entity.position + hitbox.position + offsets['right']!;
+      }
     }
-    // print('Enemy position: ${entity.position}');
-    // print('Enemy hitbox position: ${hitbox.position}');
-    // print('Health bar position: ${healthBar.position}');
   }
 }

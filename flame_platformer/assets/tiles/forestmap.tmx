@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="159" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="173">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="159" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="176">
  <tileset firstgid="1" source="env_ground.tsx"/>
  <tileset firstgid="901" source="env_trees.tsx"/>
  <tileset firstgid="2057" source="castle_env.tsx"/>
@@ -729,6 +729,18 @@
   <object id="167" name="Cave" type="BGM_Checkpoint" x="0" y="544" width="2064" height="464"/>
   <object id="169" name="Bonfire_Ground" type="Bonfire" x="321.176" y="441.41" width="32" height="32"/>
   <object id="172" name="Bonfire_Cave" type="Bonfire" x="849.176" y="841.41" width="32" height="32"/>
+  <object id="173" name="Boss" type="Boss" x="593.042" y="382.849" width="110" height="80.136">
+   <properties>
+    <property name="offNeg" type="float" value="5"/>
+    <property name="offPos" type="float" value="6"/>
+   </properties>
+  </object>
+  <object id="175" name="Shit" type="Shit" x="321.997" y="399.515" width="74" height="63.6364">
+   <properties>
+    <property name="offNeg" type="float" value="20"/>
+    <property name="offPos" type="float" value="20"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="11" name="Collisions">
   <object id="25" x="960" y="464" width="80" height="80"/>

@@ -90,6 +90,18 @@ flutter:
     - assets/images/Enemies/Monster/Skeleton/
     - assets/images/Enemies/Monster/Mushroom/
     - assets/images/Enemies/Monster/Flying eye/
+    - assets/images/Boss/Idle/
+    - assets/images/Boss/Run/
+    - assets/images/Boss/Attack/
+    - assets/images/Boss/Attack2/
+    - assets/images/Boss/Attack3/
+    - assets/images/Boss/Attack4/
+    - assets/images/Boss/Attack5/
+    - assets/images/Shit/Attacks/
+    - assets/images/Shit/Attacks2/
+    - assets/images/Shit/Attacks3/
+    - assets/images/Shit/Idle/
+    - assets/images/Shit/Run/
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
