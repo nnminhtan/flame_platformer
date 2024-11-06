@@ -3,26 +3,74 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "test.tmx",
+    "activeFile": "forestmap.tmx",
     "expandedProjectPaths": [
         "."
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "FirstScene.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 0.42
         },
+        "Skeleton enemy.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 3.5437
+        },
+        "Sprite-sheet-campfire.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 0.1421
+        },
+        "Sprite-sheet-campfire_optimized.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 9.92
+        },
+        "Sprite-sheet-campfire_resize.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3.9041
+        },
+        "background1.tsx": {
+            "scaleInDock": 1
+        },
+        "background3.tsx": {
+            "scaleInDock": 1
+        },
+        "bgrd_tree3.tsx": {
+            "scaleInDock": 1
+        },
+        "bgrd_tree5.tsx": {
+            "scaleInDock": 1
+        },
+        "castle_decor.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "castle_env.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "castle_tile.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5
+        },
         "castlemap.tmx": {
-            "scale": 1,
-            "selectedLayer": 1,
+            "expandedObjectLayers": [
+                2,
+                3
+            ],
+            "scale": 0.5,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 225.5,
-                "y": 279
+                "x": 960,
+                "y": 511
             }
         },
         "env_ground.tsx": {
-            "scaleInDock": 2.0445,
+            "dynamicWrapping": false,
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "env_rock.tsx": {
@@ -31,23 +79,34 @@
         },
         "env_trees.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1.131,
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "forestmap.tmx": {
             "expandedObjectLayers": [
                 8
             ],
-            "scale": 1.5,
-            "selectedLayer": 5,
+            "scale": 0.5,
+            "selectedLayer": 10,
             "viewCenter": {
-                "x": 367.66666666666663,
-                "y": 471.3333333333333
+                "x": 605,
+                "y": 480
             }
         },
         "idle.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "main_background.tsx": {
+            "scaleInDock": 1
+        },
+        "mainlev_build.tsx": {
+            "scaleInDock": 1.5534,
+            "scaleInEditor": 1
+        },
+        "props2.tsx": {
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "temp.tsx": {
@@ -64,32 +123,38 @@
             }
         }
     },
-    "last.imagePath": "E:/GameAsset/Adventurer-1.5/Individual Sprites",
+    "last.externalTilesetPath": "/Users/macbookpro2020/Downloads/github/flame_platformer/flame_platformer/assets/tiles",
+    "last.imagePath": "/Users/macbookpro2020/Downloads/github/flame_platformer/flame_platformer/assets/images",
     "map.fixedSize": true,
-    "map.height": 4,
+    "map.height": 20,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
-    "map.width": 15,
+    "map.width": 60,
     "openFiles": [
-        "idle.tsx",
-        "test.tmx"
+        "forestmap.tmx",
+        "castlemap.tmx"
     ],
     "project": "FirstScene.tiled-project",
     "recentFiles": [
-        "test.tmx",
-        "idle.tsx",
-        "env_rock.tsx",
+        "castlemap.tmx",
         "forestmap.tmx",
-        "env_ground.tsx",
-        "env_trees.tsx",
-        "FirstScene.tsx",
-        "temp.tsx"
+        "Sprite-sheet-campfire_optimized.tsx",
+        "Sprite-sheet-campfire_resize.tsx",
+        "castle_decor.tsx",
+        "Sprite-sheet-campfire.tsx",
+        "props2.tsx",
+        "mainlev_build.tsx",
+        "castle_env.tsx",
+        "Skeleton enemy.tsx",
+        "idle.tsx",
+        "test.tmx"
     ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,
         "width": 16
     },
-    "tileset.type": 1
+    "tileset.type": 0
 }

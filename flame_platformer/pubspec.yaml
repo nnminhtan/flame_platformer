@@ -30,12 +30,22 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_localizations:
+    sdk: flutter
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flame: ^1.19.0
   flame_tiled: ^1.20.3
+  flame_audio: ^2.10.5
+  google_fonts: ^6.2.1
+  path_provider: ^2.1.4
+  firebase_core: ^3.6.0
+  google_sign_in: ^6.2.1
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  intl: ^0.19.0
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
@@ -61,12 +71,47 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/tiles/
+    - assets/audio/
+    - assets/lang/
     - assets/images/DarkForest1.2/
+    - assets/images/PixelFantasy_Caves_1.0/
     - assets/images/Castle/
     - assets/images/Main Character/
     - assets/images/Main Character/Idle/
     - assets/images/Main Character/Run/
     - assets/images/Main Character/Jump/
+    - assets/images/Main Character/Fall/
+    - assets/images/Main Character/Normal_Attack/
+    - assets/images/Main Character/Up_Attack/
+    - assets/images/Main Character/Air_Attack/
+    - assets/images/Main Character/Plunge_Attack/Loop/
+    - assets/images/Main Character/Plunge_Attack/End/
+    - assets/images/Main Character/Slide/
+    - assets/images/Main Character/Crouch/
+    - assets/images/Main Character/Die/
+    - assets/images/Main Character/Hurt/
+    - assets/images/HUD/
+    - assets/images/miscs/
+    - assets/images/HealthBar/
+    - assets/images/Trap and Weapon/
+    - assets/images/Enemies/Monster/Skeleton/
+    - assets/images/Enemies/Monster/Mushroom/
+    - assets/images/Enemies/Monster/Flying eye/
+    - assets/images/Boss/Idle/
+    - assets/images/Boss/Run/
+    - assets/images/Boss/Attack/
+    - assets/images/Boss/Attack2/
+    - assets/images/Boss/Attack3/
+    - assets/images/Boss/Attack4/
+    - assets/images/Boss/Attack5/
+    - assets/images/Shit/Attacks/
+    - assets/images/Shit/Attacks2/
+    - assets/images/Shit/Attacks3/
+    - assets/images/Shit/Idle/
+    - assets/images/Shit/Run/
+    - assets/images/Enemies/Monster/Necromancer/
+    - assets/images/Enemies/Monster/Spells/Molten_Spear/
+    - assets/images/Enemies/Monster/Spells/Fire_Ball/
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
