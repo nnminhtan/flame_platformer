@@ -60,7 +60,7 @@ class Boss extends SpriteAnimationGroupComponent
 
   @override
   FutureOr<void> onLoad() async {
-    debugMode = true;
+    // debugMode = true;
     player = game.player;
 
     BossHitbox = RectangleHitbox(

@@ -14,7 +14,7 @@ class Bonfire extends SpriteAnimationComponent with HasGameRef<FlamePlatformer>{
   @override
   FutureOr<void> onLoad() {
     // priority = -1;
-    debugMode = true;
+    // debugMode = true;
 
     add(RectangleHitbox(
       position: Vector2(hitbox.offsetX, hitbox.offsetY),

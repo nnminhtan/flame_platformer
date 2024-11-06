@@ -29,9 +29,10 @@ class Necromancer extends EnemiesWithspells {
 
   @override
   Future<void> onLoad() async {
+    debugMode = true;
     skeletonHitbox = RectangleHitbox(
-      position: Vector2(45, 55), // Vị trí và kích thước riêng cho Skeleton
-      size: Vector2(40, 55),
+      position: Vector2(30, 30), // Vị trí và kích thước riêng cho Skeleton
+      size: Vector2(60, 80),
     );
     add(skeletonHitbox); // Thêm hitbox vào component
     await _spriteAnimation();

@@ -134,9 +134,9 @@ abstract class EnemiesWithspells extends SpriteAnimationGroupComponent
     switch (index) {
       case 0:
       case 3:
+      case 4:
         return EnemyState.spell1;
       case 1:
-      case 4:
         return EnemyState.spell2;
       case 2:
         return EnemyState.summon;

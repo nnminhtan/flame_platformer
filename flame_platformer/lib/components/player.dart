@@ -4,6 +4,8 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_platformer/components/Enemies/Enemies.dart';
+import 'package:flame_platformer/components/Enemies/Enemies_withspells.dart';
+import 'package:flame_platformer/components/Enemies/Spells/spell.dart';
 import 'package:flame_platformer/components/bgm_checkpoint.dart';
 import 'package:flame_platformer/components/bonfire.dart';
 import 'package:flame_platformer/components/checkpoint.dart';
@@ -87,7 +89,7 @@ class Player extends SpriteAnimationGroupComponent
   // for environment interaction
   List<CollisionBlock> collisionBlocks = [];
   final double _gravity = 9.8;
-  final double _jumpForce = 250; //460
+  final double _jumpForce = 190; //250 460
   final double _terminalVelocity = 300;
 
   //checkpoint
@@ -510,8 +512,17 @@ class Player extends SpriteAnimationGroupComponent
 
       // Collision with Player's Attack Hitbox
       if (attackHitbox != null &&
-          other is Enemies &&
-          attackHitbox!.isColliding) {
+          (other is Enemies) && attackHitbox!.isColliding) {
+        if (isAttacking && !isAttackCdPlayer) {
+          isAttackCdPlayer = true;
+          other.takeDamage(20);
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            isAttackCdPlayer = false;
+          });
+        }
+      }
+      if (attackHitbox != null &&
+          (other is EnemiesWithspells) && attackHitbox!.isColliding) {
         if (isAttacking && !isAttackCdPlayer) {
           isAttackCdPlayer = true;
           other.takeDamage(20);
@@ -531,7 +542,7 @@ class Player extends SpriteAnimationGroupComponent
               isAttackCdEnemy == false)) {
         isAttackCdEnemy = true;
         // Future.delayed(const Duration(milliseconds: 1300), () {
-        takeDamage(50);
+        takeDamage(20);
         _cooldownTimer = hurtCooldown;
         // });
         Future.delayed(const Duration(milliseconds: 1000), () {
@@ -543,6 +554,12 @@ class Player extends SpriteAnimationGroupComponent
           (_cooldownTimer <= 0 && gotHit == false)) {
         if (hp > 0) {
           takeDamage(10);
+          _cooldownTimer = hurtCooldown;
+        }
+      }
+      if ((other is Spell) && (_cooldownTimer <= 0 && gotHit == false)) {
+        if (hp > 0) {
+          takeDamage(30);
           _cooldownTimer = hurtCooldown;
         }
       }
